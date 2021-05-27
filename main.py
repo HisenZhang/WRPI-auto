@@ -84,6 +84,8 @@ channelMap = {
     "PSA": mixer.Channel(3),
 }
 
+channelLastPlayed = {}
+
 # Utilities
 
 
@@ -128,7 +130,7 @@ def list_sound(t:str)->list:
 
 
 def play_file(f:str, chan:mixer.Channel):
-    """Play a sound in a channel.
+    """Play a sound in a channel. This is a low level function.
 
     Args:
         f (str): path to sound file, i.e. "lib/show/abc.mp3"
@@ -153,7 +155,9 @@ def play_random(t:str):
     """
     try:
         selected = random.choice(list_sound(t))
-        play_file(join(lib_base, t, selected), channelMap[t])
+        file = join(lib_base, t, selected)
+        play_file(file, channelMap[t])
+        channelLastPlayed[t] = file
     except IndexError:
         logging.error("Empty playlist. Not playing.")
 
@@ -171,9 +175,23 @@ def play_loop(t:str):
         cyclic_queue.extend(list_sound(t))
     else:
         if not channelMap[t].get_busy():
-            play_file(join(lib_base, t, cyclic_queue[-1]), channelMap[t])
+            file = join(lib_base, t, cyclic_queue[-1])
+            play_file(file, channelMap[t])
+            channelLastPlayed[t] = file
             cyclic_queue.pop()
 
+def digest():
+    """What's playing in each channel.
+    """
+    stringBuffer = ['Channel digest:']
+    for chan,sound in channelLastPlayed.items():
+        if channelMap[chan].get_busy():
+            stringBuffer.append('[')
+            stringBuffer.append(chan)
+            stringBuffer.append(']')
+            stringBuffer.append('-')
+            stringBuffer.append(sound)
+    logging.info(' '.join(stringBuffer))
 
 def play_stationID():
     """Play randomly selected stationID. Lower show volume during station ID.
@@ -206,7 +224,9 @@ def routine():
 
     # Register schedule
     # schedule.every().hour.at(":00").do(play_stationID) # real business here
+    # schedule.every(5).minute.at(":15").do(digest)
     schedule.every().minute.at(":00").do(play_stationID)  # debugging
+    schedule.every().minute.at(":30").do(digest)  
 
     # loop
     while True:
