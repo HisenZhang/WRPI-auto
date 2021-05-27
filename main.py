@@ -206,7 +206,7 @@ def play_stationID():
     pass
 
 
-def close():
+def signout():
     """Release resources.
     """
     mixer.stop()
@@ -236,7 +236,7 @@ def routine():
         pass
 
     # t shutdown
-    close()
+    signout()
     logging.info("Resourced unloaded. Bye.")
 
 
