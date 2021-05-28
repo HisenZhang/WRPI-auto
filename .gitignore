@@ -148,3 +148,6 @@ lib/
 
 # external binaries
 bin/
+
+# misc
+db.json
