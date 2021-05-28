@@ -35,7 +35,6 @@
 from os.path import join
 from os import listdir
 from pygame import mixer
-import pygame
 import schedule
 import time
 import random
