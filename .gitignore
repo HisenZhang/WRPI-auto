@@ -145,3 +145,6 @@ lib/
 
 # VSCode
 .vscode/
+
+# external binaries
+bin/
