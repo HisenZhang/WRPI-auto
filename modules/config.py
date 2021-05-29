@@ -6,5 +6,10 @@ TRANSITION_LENGTH = 1000
 SURPRESSION_FACTOR = 0.3
 # format supported
 SOUND_FORMAT = ('.mp3', '.wav', '.ogg')
+# bitrate
+BITRATE = '192k'
+LOUDNESS = -23
 
-lib_base = 'lib'
+FFMPEG_PATH = 'bin'
+
+LIB_BASE = 'lib'

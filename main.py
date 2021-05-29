@@ -33,6 +33,9 @@
 
 import schedule
 import time
+import sys
+import os
+os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 
 from modules import station
@@ -44,25 +47,30 @@ from modules import logging
 def routine():
     """Defining station routine.
     """
-    # At startup
-    WRPI = station.control()
-    mixer = WRPI.signIn()
+    try:    
+        # At startup
+        WRPI = station.control()
+        mixer = WRPI.signIn()
 
-    # Register schedule
-    # schedule.every().hour.at(":00").do(play_stationID) # real business here
-    # schedule.every(5).minute.at(":15").do(digest)
-    schedule.every().minute.at(":00").do(WRPI.ID)  # debugging
-    schedule.every().minute.at(":30").do(mixer.digest)
+        # Register schedule
+        # schedule.every().hour.at(":00").do(play_stationID) # real business here
+        # schedule.every(5).minute.at(":15").do(digest)
+        schedule.every().minute.at(":00").do(WRPI.ID)  # debugging
+        schedule.every().minute.at(":30").do(mixer.digest)
 
-    # loop
-    while True:
-        schedule.run_pending()
-        WRPI.playControl.loop('show')
-        time.sleep(1)
-        pass
+        # loop
+        while True:
+            schedule.run_pending()
+            WRPI.playControl.loop('show')
+            time.sleep(1)
+            pass
+    except KeyboardInterrupt:
+        WRPI.signOff()
+        sys.exit(0)
+    
+    finally:
+        WRPI.signOff()
 
-    # shutdown
-    signOff()
 
 if __name__ == '__main__':
     routine()
