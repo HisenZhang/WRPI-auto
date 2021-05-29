@@ -72,8 +72,8 @@ class control:
     def signOff(self):
         """Release resources.
         """
-        mixer.stop()
-        mixer.quit()
+        self.mixer.stop()
+        self.mixer.quit()
         logging.debug("Mixer Destroyed.")
 
         self.db.close()
