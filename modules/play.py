@@ -6,7 +6,7 @@ import random as rnd
 from pygame import mixer
 
 from .audio import virtualMixerWrapper, effect
-from .config import *
+from .config import LIB_BASE, TRANSITION_LENGTH, SURPRESSION_FACTOR
 from .util import fsUtil
 
 

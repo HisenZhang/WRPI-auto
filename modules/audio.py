@@ -1,12 +1,11 @@
 import multiprocessing
 import time
-import threading
 import logging
 from pygame import mixer
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
-from .config import *
+from .config import TRANSITION_LENGTH,LOUDNESS,NUM_CHANNEL
 from .util import fsUtil, db, paralell
 
 
@@ -65,11 +64,11 @@ class virtualMixerWrapper:
         self.mixer.set_num_channels(NUM_CHANNEL)
         self.mixer.music.set_volume(1)
         self.channelMap = {
-            "master": mixer.music,
-            "stationID": mixer.Channel(0),
-            "show": mixer.Channel(1),
-            "fill": mixer.Channel(2),
-            "PSA": mixer.Channel(3),
+            "master": self.mixer.music,
+            "stationID": self.mixer.Channel(0),
+            "show": self.mixer.Channel(1),
+            "fill": self.mixer.Channel(2),
+            "PSA": self.mixer.Channel(3),
         }
         self.channelLastPlayed = {}
 
@@ -85,3 +84,7 @@ class virtualMixerWrapper:
                 stringBuffer.append('-')
                 stringBuffer.append(sound)
         logging.info(' '.join(stringBuffer))
+
+    def destroy(self):
+        self.mixer.stop()
+        self.mixer.quit()

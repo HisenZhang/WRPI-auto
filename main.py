@@ -37,9 +37,8 @@ import sys
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
-
+from modules import logger  # MUST BE IMPORTED BEFORE ANY OTHER LOGGING MODULES
 from modules import station
-from modules import logging
 
 # Defining station behavior
 

@@ -4,11 +4,10 @@ import subprocess
 import os
 import multiprocessing
 
-import traceback
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
-from .config import *
+from .config import LIB_BASE, EXT_BIN_PATH, BITRATE, LOUDNESS, SOUND_FORMAT
 
 
 class db:
@@ -62,7 +61,7 @@ class paralell:
             prog = "./ffmpeg"
         try:
             cmd = '"{prog}" -y -i "{infile}" -af loudnorm=I={loudness}:LRA=7:tp=-2:print_format=json -b:a "{bitrate}" -f mp3 "{outfile}"'.format(
-                prog=os.path.join(FFMPEG_PATH, prog),
+                prog=os.path.join(EXT_BIN_PATH, prog),
                 loudness=loudness,
                 bitrate=str(BITRATE),
                 infile=file,
