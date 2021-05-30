@@ -33,7 +33,6 @@
 
 import schedule
 import time
-import sys
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
@@ -63,9 +62,9 @@ def routine():
             WRPI.playControl.loop('show')
             time.sleep(1)
             pass
+
     except KeyboardInterrupt:
-        WRPI.signOff()
-        sys.exit(0)
+        logger.rootLogger.warning("KeyboardInterrupt detected.")
     
     finally:
         WRPI.signOff()

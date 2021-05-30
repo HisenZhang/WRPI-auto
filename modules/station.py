@@ -51,18 +51,23 @@ class control:
 
         logging.info("Waiting for loudness normalization...")
 
-        for p in procs:
-            p[0].join()
+        try:
+            for p in procs:
+                p[0].join()
 
-        while len(multiprocessing.active_children()) > 0:
-            time.sleep(1)
+            while len(multiprocessing.active_children()) > 0:
+                time.sleep(1)
 
-        for p in procs:  # t = (thread, file)
-            p[0].close()
-            file = p[1]
-            db.setRecord(self.db, file, fsUtil.sha256sum(
-                file), LOUDNESS, BITRATE)
-            procs.remove(p)
+            for p in procs:  # t = (thread, file)
+                p[0].close()
+                file = p[1]
+                db.setRecord(self.db, file, fsUtil.sha256sum(
+                    file), LOUDNESS, BITRATE)
+                procs.remove(p)
+        except Exception as e:
+            logging.error("Process error: " + str(e))
+            for p in multiprocessing.active_children():
+                p.kill()
 
         logging.info("All sounds in lib normalized.")
 

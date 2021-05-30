@@ -86,5 +86,6 @@ class virtualMixerWrapper:
         logging.info(' '.join(stringBuffer))
 
     def destroy(self):
-        self.mixer.stop()
+        if mixer.get_init():
+            self.mixer.stop()
         self.mixer.quit()

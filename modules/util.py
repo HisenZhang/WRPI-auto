@@ -60,11 +60,12 @@ class paralell:
         elif os.name == 'posix':  # Linux, Mac OS, etc
             prog = "./ffmpeg"
         try:
+            os.rename(file,file+".normalizing")
             cmd = '"{prog}" -y -i "{infile}" -af loudnorm=I={loudness}:LRA=7:tp=-2:print_format=json -b:a "{bitrate}" -f mp3 "{outfile}"'.format(
                 prog=os.path.join(EXT_BIN_PATH, prog),
                 loudness=loudness,
                 bitrate=str(BITRATE),
-                infile=file,
+                infile=file+".normalizing",
                 outfile=file+".normalized")
 
             logging.debug("Command: " + cmd)
@@ -75,7 +76,7 @@ class paralell:
             # subprocess.call(cmd, shell=False)
             logging.debug("ffmpeg exited")
 
-            os.remove(file)
+            os.remove(file+".normalizing")
             os.rename(file+".normalized", file)
         except PermissionError as e:
             logging.error("Permission error: " + str(e))
