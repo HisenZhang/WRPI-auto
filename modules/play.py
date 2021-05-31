@@ -1,4 +1,5 @@
 import logging
+import threading
 import time
 from os.path import join
 import random as rnd
@@ -31,7 +32,7 @@ class control:
             logging.error("Cannot load sound " + f)
         try:
             chan.play(s, fade_ms=TRANSITION_LENGTH)
-            logging.info("Playing " + f)
+            logging.info("Playing \"" + f + "\"")
         except:
             logging.error("Cannot play sound " + f)
 
@@ -60,10 +61,10 @@ class control:
             time.sleep(1)
         else:
             if not self.channelMap[t].get_busy():
-                file = join(LIB_BASE, t, self.cyclic_queue[-1])
+                file = join(LIB_BASE, t, self.cyclic_queue[0])
                 self.play_file(file, self.channelMap[t])
                 self.channelLastPlayed[t] = file
-                self.cyclic_queue.pop()
+                self.cyclic_queue.remove(self.cyclic_queue[0])
 
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.

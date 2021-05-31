@@ -1,24 +1,35 @@
 # WRPI AUTO
 
-The automated broadcast system for WRPI
+The automated broadcast system for WRPI. Features include:
+
+- Scheduled station ID
+- Programmable show
+- Loudness normalization (in LUFS, per EBU R 128)
+- Text user interface and headless mode
+- Station logging
+- Email alert
 
 ## Deployment
 
 Recommended Python version >= 3.8.10
 
-### Python Modules
+### 1. Python Modules
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### ffmpeg
+### 2. ffmpeg
 
 Recommended ffmpeg version 4.4
 
 Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to download compiled excutable for the specific platform. Then copy it to `bin/`. See example directory structure below.
 
-### Import Media
+### 3. Station Configuration
+
+Modify configs in `modules/config.py` such as station name, audio loudness and quality, etc.
+
+### 4. Import Media
 
 All media used are stored in `lib/` under different category organized by folders. Here are some default ones:
 
@@ -58,11 +69,20 @@ This is an example directory structure on Windows.
 ```
 
 ## Run
+
+For text user interface (TUI):
+
 ```bash
 python main.py
 ```
 
+Headless mode (no UI, no control):
+```bash
+python main.py --headless
+```
+
+Use `-h` for help.
+
 ## TODO
 
 - Email alert
-- Text UI
