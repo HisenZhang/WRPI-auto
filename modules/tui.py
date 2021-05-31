@@ -75,13 +75,14 @@ class TUI():
         self.playlist = self.root.add_scroll_menu(
             'Media Queue', 0, 0, row_span=2)
         self.playlist.set_focus_text(
-            '[PGUP] [PGDN] [HOME] [END] Rearrange selected item. ENTER to defocus.')
+            '[PGUP] [PGDN] [HOME] [END] [DEL] Move selected item. ENTER to defocus.')
         self.playlist.add_key_command(py_cui.keys.KEY_PAGE_UP, self.itemMoveUp)
         self.playlist.add_key_command(
             py_cui.keys.KEY_PAGE_DOWN, self.itemMoveDown)
         self.playlist.add_key_command(py_cui.keys.KEY_HOME, self.itemMoveTop)
         self.playlist.add_key_command(
             py_cui.keys.KEY_END, self.itemMoveBottom)
+        self.playlist.add_key_command(py_cui.keys.KEY_DELETE, self.itemRemove)
 
         self.mixerStatus = self.root.add_scroll_menu('Mixer', 2, 0)
         self.mixerStatus.set_focus_text('Mixer digest.')
@@ -171,15 +172,26 @@ class TUI():
         self.playlist.set_selected_item_index(min(currIdx + 1, maxIdx))
 
     def itemMoveTop(self):
+        q = self.station.playControl.cyclic_queue
         currIdx = self.playlist.get_selected_item_index()
-        self.station.playControl.shiftPlayList(currIdx, -currIdx)
+        temp = q[currIdx]
+        del q[currIdx]
+        q.insert(0,temp)
         self.playlist.set_selected_item_index(0)
 
     def itemMoveBottom(self):
+        q = self.station.playControl.cyclic_queue
         currIdx = self.playlist.get_selected_item_index()
+        temp = q[currIdx]
+        del q[currIdx]
+        q.append(temp)
         maxIdx = len(self.playlist._view_items)-1
-        self.station.playControl.shiftPlayList(currIdx, maxIdx-currIdx)
         self.playlist.set_selected_item_index(maxIdx)
+    
+    def itemRemove(self):
+        idx = self.playlist.get_selected_item_index()
+        self.station.playControl.removeFromPlayList(idx)
+        self.playlist.set_selected_item_index(min(max(idx,0),idx))
 
     def _updateUI(self):
         logging.debug("TUI update")

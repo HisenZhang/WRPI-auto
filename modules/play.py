@@ -28,7 +28,7 @@ class control:
             chan (Mixer.Channel): [description]
         """
         try:
-            chan.play(s.data, fade_ms=TRANSITION_LENGTH)
+            chan.play(s.getData(), fade_ms=TRANSITION_LENGTH)
             logging.info("Playing \"" + s.path + "\" Length " + s.strDuration())
         except:
             logging.error("Cannot play sound " + s.path)
@@ -67,6 +67,9 @@ class control:
         target = max(target, 0)
         target = min(target, len(self.cyclic_queue)-1)
         self.cyclic_queue[target], self.cyclic_queue[idx] = self.cyclic_queue[idx], self.cyclic_queue[target]
+    
+    def removeFromPlayList(self,idx):
+        del self.cyclic_queue[idx]
 
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.
