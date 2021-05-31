@@ -30,7 +30,7 @@ def main():
     else:
         try:
             frame = None
-            mainWindow = py_cui.PyCUI(3, 3, exit_key=1)
+            mainWindow = py_cui.PyCUI(4, 3, exit_key=1)
             mainWindow.set_refresh_timeout(1)            
             mainWindow.set_title(
                 '{} Broadcast Automation System'.format(STATION_NAME))
@@ -49,7 +49,8 @@ def main():
         except Exception as e:
             logging.critical("TUI: "+str(e))
         finally:
-            frame.station.signOff()
+            if frame:
+                frame.station.signOff()
             sys.exit(0)
 
 

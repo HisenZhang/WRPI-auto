@@ -1,3 +1,4 @@
+import datetime
 import logging
 import threading
 import time
@@ -6,7 +7,7 @@ import random as rnd
 
 from pygame import mixer
 
-from .audio import virtualMixerWrapper, effect
+from .audio import virtualMixerWrapper, effect, sound
 from .config import LIB_BASE, TRANSITION_LENGTH, SURPRESSION_FACTOR
 from .util import fsUtil
 
@@ -19,7 +20,7 @@ class control:
         self.cyclic_queue = []  # For play_loop use
         pass
 
-    def play_file(self, f: str, chan: mixer.Channel):
+    def play_file(self, s: sound, chan: mixer.Channel):
         """Play a sound in a channel. This is a low level function.
 
         Args:
@@ -27,14 +28,10 @@ class control:
             chan (Mixer.Channel): [description]
         """
         try:
-            s = self.mixer.Sound(f)
-        except IOError:
-            logging.error("Cannot load sound " + f)
-        try:
-            chan.play(s, fade_ms=TRANSITION_LENGTH)
-            logging.info("Playing \"" + f + "\"")
+            chan.play(s.data, fade_ms=TRANSITION_LENGTH)
+            logging.info("Playing \"" + s.path + "\" Length " + s.strDuration())
         except:
-            logging.error("Cannot play sound " + f)
+            logging.error("Cannot play sound " + s.path)
 
     def random(self, t: str):
         """Play a randomly picked sound from a given type
@@ -43,10 +40,9 @@ class control:
             t (str): type of sound
         """
         try:
-            selected = rnd.choice(fsUtil.list_sound(t))
-            file = join(LIB_BASE, t, selected)
-            self.play_file(file, self.channelMap[t])
-            self.channelLastPlayed[t] = file
+            selected = sound(rnd.choice(fsUtil.list_sound(t)))
+            self.play_file(selected, self.channelMap[t])
+            self.channelLastPlayed[t] = selected
         except IndexError:
             logging.error("Empty playlist. Not playing.")
 
@@ -57,23 +53,32 @@ class control:
             t (str): type of sound
         """
         if len(self.cyclic_queue) == 0:
-            self.cyclic_queue.extend(fsUtil.list_sound(t))
+            self.cyclic_queue.extend([sound(f) for f in fsUtil.list_sound(t)])
             time.sleep(1)
         else:
             if not self.channelMap[t].get_busy():
-                file = join(LIB_BASE, t, self.cyclic_queue[0])
-                self.play_file(file, self.channelMap[t])
-                self.channelLastPlayed[t] = file
+                s = self.cyclic_queue[0]
+                self.play_file(s, self.channelMap[t])
+                self.channelLastPlayed[t] = s
                 self.cyclic_queue.remove(self.cyclic_queue[0])
+
+    def shiftPlayList(self, idx, offset):
+        target = idx + offset
+        target = max(target, 0)
+        target = min(target, len(self.cyclic_queue)-1)
+        self.cyclic_queue[target], self.cyclic_queue[idx] = self.cyclic_queue[idx], self.cyclic_queue[target]
 
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.
         """
-        vol = self.channelMap['show'].get_volume()
-        effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
-        self.random('stationID')
-        while self.channelMap['stationID'].get_busy():
-            time.sleep(1)
-        effect.fadeIn(self.channelMap['show'], vol)
-        logging.info("Station ID sent.")
+        try:
+            vol = self.channelMap['show'].get_volume()
+            effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
+            self.random('stationID')
+            while self.channelMap['stationID'].get_busy():
+                time.sleep(1)
+            effect.fadeIn(self.channelMap['show'], vol)
+            logging.info("Station ID sent.")
+        except Exception as e:
+            logging.critical("Fail to sent station ID: " + str(e))
         pass

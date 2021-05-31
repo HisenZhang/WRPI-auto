@@ -43,11 +43,10 @@ class control:
         # get sub dirs in lib using magic
         subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
         for sub in subDir:
-            for sound in fsUtil.list_sound(sub):
-                file = os.path.join(LIB_BASE, sub, sound)
-                p = audio.effect.normalize(self.db, file)
+            for s in fsUtil.list_sound(sub):
+                p = audio.effect.normalize(self.db, s)
                 if p != None:
-                    procs.append((p, file))
+                    procs.append((p, s))
         
         if len(procs) > 0:
             logging.info("Waiting for loudness normalization...")
@@ -74,6 +73,9 @@ class control:
 
         self.ID()
         return self.mixer
+
+    def systemMonitor(self):
+        pass
 
     def signOff(self):
         """Release resources.

@@ -1,8 +1,11 @@
+import datetime
 import hashlib
 import logging
+from math import ceil
 import subprocess
 import os
 import multiprocessing
+import pygame
 
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
@@ -60,7 +63,7 @@ class paralell:
         elif os.name == 'posix':  # Linux, Mac OS, etc
             prog = "./ffmpeg"
         try:
-            os.rename(file,file+".normalizing")
+            os.rename(file, file+".normalizing")
             cmd = '"{prog}" -y -i "{infile}" -af loudnorm=I={loudness}:LRA=7:tp=-2:print_format=json -b:a "{bitrate}" -f mp3 "{outfile}"'.format(
                 prog=os.path.join(EXT_BIN_PATH, prog),
                 loudness=loudness,
@@ -68,6 +71,8 @@ class paralell:
                 infile=file+".normalizing",
                 outfile=file+".normalized")
 
+            logging.info(
+                "Normalizing loudness for \"{}\" at {} LUFS".format(file, loudness))
             logging.debug("Command: " + cmd)
 
             # suppress output to stdout from the subprocess
@@ -81,7 +86,7 @@ class paralell:
         except PermissionError as e:
             logging.error("Permission error: " + str(e))
         except Exception as e:
-            logging.error("Error occured in the subprocess: " + str(e))
+            logging.error("Error occured in the loudness normalization: " + str(e))
         finally:
             logging.debug("Worker " + workerName + " ends.")
 

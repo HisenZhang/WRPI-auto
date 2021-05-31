@@ -4,10 +4,10 @@ import time
 import logging
 from pygame import mixer
 
-from tinydb import TinyDB, Query  # lightweight DB based on JSON
+from tinydb import TinyDB, Query, utils  # lightweight DB based on JSON
 
 from .config import TRANSITION_LENGTH, LOUDNESS, NUM_CHANNEL
-from .util import fsUtil, db, paralell
+from .util import fsUtil, db, paralell, conversion
 
 class sound:
     def __init__(self,filename,duration=None) -> None:
@@ -64,8 +64,6 @@ class effect:
         # Avoid float point error builds up
         chan.set_volume(desired_vol)
 
-    # def async_normalize(con: TinyDB, file: str):
-
     def normalize(con: TinyDB, file: str):
         if not db.isNormalized(con, fsUtil.sha256sum(file)):
             p = effect._normalize(file, LOUDNESS)
@@ -94,7 +92,6 @@ class virtualMixerWrapper:
         self.mixer.set_num_channels(NUM_CHANNEL)
         self.mixer.music.set_volume(1)
         self.channelMap = {
-            "master": self.mixer.music,
             "stationID": self.mixer.Channel(0),
             "show": self.mixer.Channel(1),
             "fill": self.mixer.Channel(2),
@@ -114,48 +111,70 @@ class virtualMixerWrapper:
             for chan, sound in self.channelLastPlayed.items():
                 if self.channelMap[chan].get_busy():
                     stringBuffer.append("[{chan}]  ({vol}%) - {sound}".format(
-                        chan=chan, vol=int(self.vol[chan]*100), sound=sound))
+                        chan=chan, vol=int(self.vol[chan]*100), sound=sound.path))
             logging.info(' '.join(stringBuffer))
 
     def get_volume(self) -> map:
-        for name, chan in self.channelMap.items():
-            self.vol[name] = chan.get_volume()
-        return self.vol
+        with self.lock:
+            for name, chan in self.channelMap.items():
+                self.vol[name] = chan.get_volume()
+            return self.vol
 
     def get_busy(self) -> bool:
         return self.mixer.mixer.get_busy()
 
     def mute(self):
-        if self.muted == True:
-            return
-        for _, chan in self.channelMap.items():
-            chan.set_volume(0)
-        self.muted = True
-        logging.warning("All channels muted.")
+        with self.lock:
+            if self.muted == True:
+                return
+            for _, chan in self.channelMap.items():
+                chan.set_volume(0)
+            self.muted = True
+            logging.warning("All channels muted.")
 
     def unmute(self):
-        if self.muted == False:
-            return
-        for _, chan in self.channelMap.items():
-            chan.set_volume(1)
-        self.muted = False
-        logging.warning("All channels unmuted.")
+        with self.lock:
+            if self.muted == False:
+                return
+            for _, chan in self.channelMap.items():
+                chan.set_volume(1)
+            self.muted = False
+            logging.warning("All channels unmuted.")
 
     def pause(self):
-        if self.pause == True:
-            return
-        effect.fadeOut(self.mixer.music)
-        self.mixer.pause()
-        self.pause = True
-        logging.warning("All channels paused.")
+        with self.lock:
+            if self.paused == True:
+                return
+            effect.fadeOut(self.mixer.music)
+            self.mixer.pause()
+            self.paused = True
+            logging.warning("All channels paused.")
 
     def unpause(self):
-        if self.pause == False:
-            return
-        effect.fadeIn(self.mixer.music)
-        self.mixer.unpause()
-        self.pause = False
-        logging.warning("All channels unpaused.")
+        with self.lock:
+            if self.paused == False:
+                return
+            effect.fadeIn(self.mixer.music)
+            self.mixer.unpause()
+            self.paused = False
+            logging.warning("All channels unpaused.")
+
+    def volumeUp(self):
+        with self.lock:
+            self.volumeShift(+0.1)
+
+    def volumeDown(self):
+        with self.lock:
+            self.volumeShift(-0.1)
+
+    def volumeShift(self, deviation):
+        with self.lock:
+            self.get_volume()
+            for name, vol in self.vol.items():
+                target = vol + deviation
+                target = min(target, 1.0)
+                target = max(target, 0)
+                self.channelMap[name].set_volume(target)
 
     def get_init(self):
         return self.mixer.get_init()
