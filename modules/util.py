@@ -113,4 +113,30 @@ class fsUtil:
         Returns:
             list: a list of sound files
         """
-        return [f for f in os.listdir(os.path.join(LIB_BASE, t)) if f.lower().endswith(SOUND_FORMAT)]
+        return [os.path.join(LIB_BASE, t, f) for f in os.listdir(os.path.join(LIB_BASE, t)) if f.lower().endswith(SOUND_FORMAT)]
+
+    def soundDuration(file: str):
+        s = pygame.mixer.Sound(file)
+        l = s.get_length()
+        return l
+
+    def getLength(file):
+        logging.debug("Running getLength:")
+        prog = ''
+        if os.name == 'nt':  # Windows
+            prog = 'ffprobe.exe'
+        elif os.name == 'posix':  # Linux, Mac OS, etc
+            prog = "./ffprobe"
+        try:
+            result = subprocess.run([os.path.join(EXT_BIN_PATH,prog), '-v', 'error', '-show_entries', 'format=duration', '-of',
+                                    'default=noprint_wrappers=1:nokey=1', file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            logging.debug("getLength output: "+repr(result))                       
+            return float(result.stdout)
+        except PermissionError as e:
+            logging.error("Permission error: " + str(e))
+        except Exception as e:
+            logging.error("Error occured in the ffprobe getLength: " + str(e))
+
+class conversion:
+    def floatToHMS(f: float):
+        return str(datetime.timedelta(seconds=ceil(f)))

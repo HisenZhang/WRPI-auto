@@ -9,6 +9,30 @@ from tinydb import TinyDB, Query  # lightweight DB based on JSON
 from .config import TRANSITION_LENGTH, LOUDNESS, NUM_CHANNEL
 from .util import fsUtil, db, paralell
 
+class sound:
+    def __init__(self,filename,duration=None) -> None:
+        self.path = filename
+        self.data = None
+        self.duration = duration
+
+    def _get_length(self):
+        return fsUtil.getLength(self.path)
+
+    def getDuration(self):
+        if self.duration is None:
+            self.duration = self._get_length()
+        return self.duration
+
+    def getData(self):
+        if self.data is None:
+            self.data = mixer.Sound(self.path)
+        return self.data
+
+    def strDuration(self):
+        return conversion.floatToHMS(self.getDuration())
+
+    def __str__(self) -> str:
+        return self.path
 
 class effect:
     def fadeOut(chan: mixer.Channel, desired_vol: int = 0):
