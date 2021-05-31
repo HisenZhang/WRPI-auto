@@ -19,11 +19,11 @@ Recommended Python version >= 3.8.10
 pip install -r requirements.txt
 ```
 
-### 2. ffmpeg
+### 2. ffmpeg & ffprobe
 
-Recommended ffmpeg version 4.4
+`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4
 
-Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to download compiled excutable for the specific platform. Then copy it to `bin/`. See example directory structure below.
+Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. See example directory structure below.
 
 ### 3. Station Configuration
 
@@ -52,6 +52,7 @@ This is an example directory structure on Windows.
 │
 ├─bin           // external binaries
 │   ffmpeg.exe  // for audio processing
+|   ffprobe.exe
 │
 ├─lib           // sound library
 │  ├─fill
