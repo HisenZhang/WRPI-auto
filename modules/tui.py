@@ -33,16 +33,17 @@ class TUI():
         schedule.every().minute.at(":00").do(self.station.ID)  # debugging
         schedule.every().minute.at(":30").do(self.mixer.digest)
 
-        schedule.every().second.do(self._updateUI)
+        # schedule.every().second.do(self._updateUI)
 
         self.root = root
+        self.root.set_on_draw_update_func(self._updateUI)
+
         self.root.add_key_command(py_cui.keys.KEY_M_LOWER, self.mixer.mute)
         self.root.add_key_command(py_cui.keys.KEY_M_UPPER, self.mixer.unmute)
         self.root.add_key_command(py_cui.keys.KEY_P_LOWER, self.mixer.pause)
         self.root.add_key_command(py_cui.keys.KEY_P_UPPER, self.mixer.unpause)
         self.root.add_key_command(py_cui.keys.KEY_H_LOWER, self.help)
         self.root.add_key_command(py_cui.keys.KEY_H_UPPER, self.help)
-        self.root.add_key_command(py_cui.keys.KEY_Q_LOWER, self.quit)
         self.root.add_key_command(py_cui.keys.KEY_Q_UPPER, self.quit)
         self.root.add_key_command(py_cui.keys.KEY_CTRL_UP, self.mixer.volumeUp)
         self.root.add_key_command(
@@ -89,6 +90,10 @@ class TUI():
 
         self.resMonitor = self.root.add_scroll_menu('System Resource', 3, 0)
         self.resMonitor.set_focus_text('System info and resource monitor.')
+        
+        self.root.add_key_command(py_cui.keys.KEY_Q_LOWER, self.focusPlaylist)
+        self.root.add_key_command(py_cui.keys.KEY_L_LOWER, self.focusLogConsole)
+        self.root.add_key_command(py_cui.keys.KEY_S_LOWER, self.focusLogConsole)
 
         #--------------------------------#
         # logConsole keybinding override #
@@ -193,8 +198,20 @@ class TUI():
         self.station.playControl.removeFromPlayList(idx)
         self.playlist.set_selected_item_index(min(max(idx,0),idx))
 
+    def focusPlaylist(self):
+        self.root.move_focus(self.playlist)
+    
+    def focusResMonitor(self):
+        self.root.move_focus(self.resMonitor) 
+
+    def focusLogConsole(self):
+        self.root.move_focus(self.logConsole) 
+
     def _updateUI(self):
         logging.debug("TUI update")
+        
+        schedule.run_pending()
+        self.station.playControl.loop('show')
 
         status = []
         if self.mixer.muted:

@@ -20,18 +20,22 @@ class control:
         self.cyclic_queue = []  # For play_loop use
         pass
 
-    def play_file(self, s: sound, chan: mixer.Channel):
+    def play_file(self, s: sound, chan: mixer.Channel) -> float:
         """Play a sound in a channel. This is a low level function.
 
         Args:
             f (str): path to sound file, i.e. "lib/show/abc.mp3"
-            chan (Mixer.Channel): [description]
+            chan (Mixer.Channel): channel to play in
+
+        Returns:
+            float: duration of the sound file
         """
         try:
             chan.play(s.getData(), fade_ms=TRANSITION_LENGTH)
             logging.info("Playing \"" + s.path + "\" Length " + s.strDuration())
-        except:
-            logging.error("Cannot play sound " + s.path)
+            return s.getDuration()
+        except Exception as e:
+            logging.error("Cannot play sound " + s.path + ": " + str(e))
 
     def random(self, t: str):
         """Play a randomly picked sound from a given type
@@ -41,8 +45,9 @@ class control:
         """
         try:
             selected = sound(rnd.choice(fsUtil.list_sound(t)))
-            self.play_file(selected, self.channelMap[t])
+            duration = self.play_file(selected, self.channelMap[t])
             self.channelLastPlayed[t] = selected
+            return duration
         except IndexError:
             logging.error("Empty playlist. Not playing.")
 
@@ -54,7 +59,6 @@ class control:
         """
         if len(self.cyclic_queue) == 0:
             self.cyclic_queue.extend([sound(f) for f in fsUtil.list_sound(t)])
-            time.sleep(1)
         else:
             if not self.channelMap[t].get_busy():
                 s = self.cyclic_queue[0]
@@ -74,14 +78,16 @@ class control:
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.
         """
-        try:
-            vol = self.channelMap['show'].get_volume()
-            effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
-            self.random('stationID')
-            while self.channelMap['stationID'].get_busy():
-                time.sleep(1)
-            effect.fadeIn(self.channelMap['show'], vol)
-            logging.info("Station ID sent.")
-        except Exception as e:
-            logging.critical("Fail to sent station ID: " + str(e))
-        pass
+        vol = self.channelMap['show'].get_volume()
+        effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
+        duration = self.random('stationID')
+        if duration > 10:
+            self.channelMap['show'].pause()
+            effect.fadeOut(self.channelMap['show'], 0)
+        while self.channelMap['stationID'].get_busy():
+            time.sleep(1)
+        if duration > 10:
+            self.channelMap['show'].unpause()
+        effect.fadeIn(self.channelMap['show'], vol)
+        logging.info("Station ID sent.")
+

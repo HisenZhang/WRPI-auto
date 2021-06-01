@@ -21,7 +21,12 @@ class control:
     def ID(self):
         """Station ID
         """
-        self.playControl.stationID()
+        try:
+            self.playControl.stationID()
+        except Exception as e:
+            logging.critical("Station ID not sent: " + str(e))
+            self.signOff()
+            sys.exit(0)
 
     def signIn(self):
         """Sign in to station to get mixer!
