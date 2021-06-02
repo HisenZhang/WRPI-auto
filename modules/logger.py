@@ -4,7 +4,8 @@ import os
 import time
 import re
 
-from .config import LOG_FORMAT, STATION_NAME
+from .config import LOG_FORMAT, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_FROMADDR, SMTP_TOADDRS, SMTP_SUBJECT, SMTP_CREDENTIALS, SMTP_SECURE
+
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
     """Alternative to TimedRotatingFileHandler: rewrite naming rules. https://stackoverflow.com/a/25387192
@@ -12,7 +13,8 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
     Args:
         logging ([type]): [description]
     """
-    def __init__(self, filename, when='h', interval=1, backupCount=0, encoding=None, delay=False, utc=False, postfix = ".log"):
+
+    def __init__(self, filename, when='h', interval=1, backupCount=0, encoding=None, delay=False, utc=False, postfix=".log"):
 
         self.origFileName = filename
         self.when = when.upper()
@@ -23,46 +25,50 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
         self.postfix = postfix
 
         if self.when == 'S':
-            self.interval = 1 # one second
+            self.interval = 1  # one second
             self.suffix = "%Y-%m-%d_%H-%M-%S"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}$"
         elif self.when == 'M':
-            self.interval = 60 # one minute
+            self.interval = 60  # one minute
             self.suffix = "%Y-%m-%d_%H-%M"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}$"
         elif self.when == 'H':
-            self.interval = 60 * 60 # one hour
+            self.interval = 60 * 60  # one hour
             self.suffix = "%Y-%m-%d_%H"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}_\d{2}$"
         elif self.when == 'D' or self.when == 'MIDNIGHT':
-            self.interval = 60 * 60 * 24 # one day
+            self.interval = 60 * 60 * 24  # one day
             self.suffix = "%Y-%m-%d"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}$"
         elif self.when.startswith('W'):
-            self.interval = 60 * 60 * 24 * 7 # one week
+            self.interval = 60 * 60 * 24 * 7  # one week
             if len(self.when) != 2:
-                raise ValueError("You must specify a day for weekly rollover from 0 to 6 (0 is Monday): %s" % self.when)
+                raise ValueError(
+                    "You must specify a day for weekly rollover from 0 to 6 (0 is Monday): %s" % self.when)
             if self.when[1] < '0' or self.when[1] > '6':
-                 raise ValueError("Invalid day specified for weekly rollover: %s" % self.when)
+                raise ValueError(
+                    "Invalid day specified for weekly rollover: %s" % self.when)
             self.dayOfWeek = int(self.when[1])
             self.suffix = "%Y-%m-%d"
             self.extMatch = r"^\d{4}-\d{2}-\d{2}$"
         else:
-            raise ValueError("Invalid rollover interval specified: %s" % self.when)
+            raise ValueError(
+                "Invalid rollover interval specified: %s" % self.when)
 
         currenttime = int(time.time())
-        logging.handlers.BaseRotatingHandler.__init__(self, self.calculateFileName(currenttime), 'a', encoding, delay)
+        logging.handlers.BaseRotatingHandler.__init__(
+            self, self.calculateFileName(currenttime), 'a', encoding, delay)
 
         self.extMatch = re.compile(self.extMatch)
-        self.interval = self.interval * interval # multiply by units requested
+        self.interval = self.interval * interval  # multiply by units requested
 
         self.rolloverAt = self.computeRollover(currenttime)
 
     def calculateFileName(self, currenttime):
         if self.utc:
-             timeTuple = time.gmtime(currenttime)
+            timeTuple = time.gmtime(currenttime)
         else:
-             timeTuple = time.localtime(currenttime)
+            timeTuple = time.localtime(currenttime)
 
         return self.origFileName + "." + time.strftime(self.suffix, timeTuple) + self.postfix
 
@@ -78,9 +84,9 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
         postlen = len(postfix)
         for fileName in fileNames:
             if fileName[:prelen] == prefix and fileName[-postlen:] == postfix and len(fileName)-postlen > prelen and fileName != newFileName:
-                 suffix = fileName[prelen:len(fileName)-postlen]
-                 if self.extMatch.match(suffix):
-                     result.append(os.path.join(dirName, fileName))
+                suffix = fileName[prelen:len(fileName)-postlen]
+                if self.extMatch.match(suffix):
+                    result.append(os.path.join(dirName, fileName))
         result.sort()
         if len(result) < self.backupCount:
             result = []
@@ -111,7 +117,7 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
         while newRolloverAt <= currentTime:
             newRolloverAt = newRolloverAt + self.interval
 
-        #If DST changes and midnight or weekly rollover, adjust for this.
+        # If DST changes and midnight or weekly rollover, adjust for this.
         if (self.when == 'MIDNIGHT' or self.when.startswith('W')) and not self.utc:
             dstNow = time.localtime(currentTime)[-1]
             dstAtRollover = time.localtime(newRolloverAt)[-1]
@@ -122,12 +128,14 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
                     newRolloverAt = newRolloverAt + 3600
         self.rolloverAt = newRolloverAt
 
+
 logFormatter = logging.Formatter(LOG_FORMAT)
 rootLogger = logging.getLogger()
 rootLogger.level = logging.INFO
 
 # fileHandler = logging.FileHandler("WRPI.log")
-fileHandler = ParallelTimedRotatingFileHandler(STATION_NAME, postfix='.log', encoding='utf-8', when='midnight',backupCount=0)
+fileHandler = ParallelTimedRotatingFileHandler(
+    STATION_NAME, postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
@@ -135,3 +143,13 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 
+if SMTP_ENABLE:
+    smtp_handler = logging.handlers.SMTPHandler(mailhost=SMTP_HOST,
+                                                fromaddr=SMTP_FROMADDR,
+                                                toaddrs=SMTP_TOADDRS,
+                                                subject=SMTP_SUBJECT,
+                                                credentials=SMTP_CREDENTIALS,
+                                                secure=SMTP_SECURE)
+    smtp_handler.setFormatter(logFormatter)
+    smtp_handler.setLevel(logging.WARNING)
+    rootLogger.addHandler(smtp_handler)
