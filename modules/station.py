@@ -43,15 +43,25 @@ class control:
             sys.exit(1)
 
         logging.info("Scanning sound lib...")
+        self.loudNorm()
+        logging.info("All sounds in lib normalized.")
+        self.ID()
+        return self.mixer
 
+    def loudNorm(self, targets:list[audio.sound]=None):
         procs = []
-        # get sub dirs in lib using magic
-        subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
-        for sub in subDir:
-            for s in fsUtil.list_sound(sub):
+
+        if targets is None:
+            # get sub dirs in lib using magic
+            subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
+            for sub in subDir:
+                for s in fsUtil.list_sound(sub):
+                    p = audio.effect.normalize(self.db, s)
+                    if p != None:
+                        procs.append((p, s))
+        else:
+            for s in targets:
                 p = audio.effect.normalize(self.db, s)
-                if p != None:
-                    procs.append((p, s))
         
         if len(procs) > 0:
             logging.info("Waiting for loudness normalization...")
@@ -73,11 +83,6 @@ class control:
                 logging.error("Process error: " + str(e))
                 for p in multiprocessing.active_children():
                     p.kill()
-
-        logging.info("All sounds in lib normalized.")
-
-        self.ID()
-        return self.mixer
 
     def systemMonitor(self):
         pass
