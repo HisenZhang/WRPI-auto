@@ -3,11 +3,12 @@ import threading
 import time
 import logging
 from pygame import mixer
+import asyncio
 
 from tinydb import TinyDB, Query, utils  # lightweight DB based on JSON
 
-from .config import TRANSITION_LENGTH, LOUDNESS, NUM_CHANNEL
-from .util import fsUtil, db, paralell, conversion
+from .config import TRANSITION_LENGTH, LOUDNESS, USER_CHANNEL
+from .util import fsUtil, db, ffmpegWrapper, conversion
 
 class sound:
     def __init__(self,filename,duration=None) -> None:
@@ -16,7 +17,7 @@ class sound:
         self.duration = duration
 
     def _get_length(self):
-        return fsUtil.getLength(self.path)
+        return ffmpegWrapper.getLength(self.path)
 
     def getDuration(self):
         if self.duration is None:
@@ -30,6 +31,9 @@ class sound:
 
     def strDuration(self):
         return conversion.floatToHMS(self.getDuration())
+
+    def unloadData(self):
+        self.data = None
 
     def __str__(self) -> str:
         return self.path
@@ -85,24 +89,23 @@ class effect:
             return
 
         p = multiprocessing.Process(
-            name='FFMPEG '+file, target=paralell.ffmpegWorker, args=(file, loudness))
+            name='FFMPEG '+file, target=ffmpegWrapper.normalizeLoudness, args=(file, loudness))
         p.start()
         return p
 
 
 class virtualMixerWrapper:
     def __init__(self) -> None:
+        DEFAULT_CHANNEL = ["stationID", "show", "fill", "PSA"]
         self.lock = threading.RLock()
         self.mixer = mixer
         self.mixer.init()
-        self.mixer.set_num_channels(NUM_CHANNEL)
+        All_CHANNEL = DEFAULT_CHANNEL + USER_CHANNEL
+        self.mixer.set_num_channels(len(All_CHANNEL))
         self.mixer.music.set_volume(1)
-        self.channelMap = {
-            "stationID": self.mixer.Channel(0),
-            "show": self.mixer.Channel(1),
-            "fill": self.mixer.Channel(2),
-            "PSA": self.mixer.Channel(3),
-        }
+        self.channelMap = {}
+        for i, chan in enumerate(All_CHANNEL):
+            self.channelMap[chan]=self.mixer.Channel(i)
         self.channelLastPlayed = {}
         self.vol = {}
         self.muted = False

@@ -6,7 +6,7 @@ import sys
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
 from .config import LIB_BASE, LOUDNESS, BITRATE, STATION_NAME
-from .util import fsUtil, db
+from .util import ffmpegWrapper, fsUtil, db
 from . import audio
 from . import play
 
@@ -56,6 +56,7 @@ class control:
             subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
             for sub in subDir:
                 for s in fsUtil.list_sound(sub):
+                    ffmpegWrapper.getLoudness(s)
                     p = audio.effect.normalize(self.db, s)
                     if p != None:
                         procs.append((p, s))
@@ -71,7 +72,7 @@ class control:
                     p[0].join()
 
                 while len(multiprocessing.active_children()) > 0:
-                    time.sleep(1)
+                    time.sleep(0.1)
 
                 for p in procs:  # t = (thread, file)
                     p[0].close()
