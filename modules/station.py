@@ -56,8 +56,7 @@ class control:
             subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
             for sub in subDir:
                 for s in fsUtil.list_sound(sub):
-                    ffmpegWrapper.getLoudness(s)
-                    p = audio.effect.normalize(self.db, s)
+                    p = audio.effect.normalize(s)
                     if p != None:
                         procs.append((p, s))
         else:
