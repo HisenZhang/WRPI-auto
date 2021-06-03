@@ -36,6 +36,12 @@ class sound:
 
 class effect:
     def fadeOut(chan: mixer.Channel, desired_vol: int = 0):
+        asyncio.run(effect._fadeOut(chan,desired_vol))
+
+    def fadeIn(chan: mixer.Channel, desired_vol: int = 0):
+        asyncio.run(effect._fadeIn(chan,desired_vol))
+
+    async def _fadeOut(chan: mixer.Channel, desired_vol: int = 0):
         """Fade out effect
 
         Args:
@@ -44,13 +50,13 @@ class effect:
         """
         vol = chan.get_volume()
         for i in range(1, TRANSITION_LENGTH):
-            time.sleep(1/TRANSITION_LENGTH)
+            await asyncio.sleep(1/TRANSITION_LENGTH)
             chan.set_volume((TRANSITION_LENGTH-i) /
                             TRANSITION_LENGTH*(vol-desired_vol)+desired_vol)
         # Avoid float point error builds up
         chan.set_volume(desired_vol)
 
-    def fadeIn(chan: mixer.Channel, desired_vol: int = 1):
+    async def _fadeIn(chan: mixer.Channel, desired_vol: int = 1):
         """Fade in effect
 
         Args:
@@ -59,7 +65,7 @@ class effect:
         """
         vol = chan.get_volume()
         for i in range(1, TRANSITION_LENGTH):
-            time.sleep(1/TRANSITION_LENGTH)
+            await asyncio.sleep(1/TRANSITION_LENGTH)
             chan.set_volume(i/TRANSITION_LENGTH*(desired_vol-vol)+vol)
         # Avoid float point error builds up
         chan.set_volume(desired_vol)
