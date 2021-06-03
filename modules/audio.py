@@ -154,8 +154,8 @@ class virtualMixerWrapper:
         with self.lock:
             if self.paused == True:
                 return
-            effect.fadeOut(self.mixer.music)
-            self.mixer.pause()
+            for _, chan in self.channelMap.items():
+                chan.pause()
             self.paused = True
             logging.warning("All channels paused.")
 
@@ -163,20 +163,20 @@ class virtualMixerWrapper:
         with self.lock:
             if self.paused == False:
                 return
-            effect.fadeIn(self.mixer.music)
-            self.mixer.unpause()
+            for _, chan in self.channelMap.items():
+                chan.unpause()
             self.paused = False
             logging.warning("All channels unpaused.")
 
     def volumeUp(self):
         with self.lock:
-            self.volumeShift(+0.1)
+            self.volumeChange(+0.1)
 
     def volumeDown(self):
         with self.lock:
-            self.volumeShift(-0.1)
+            self.volumeChange(-0.1)
 
-    def volumeShift(self, deviation):
+    def volumeChange(self, deviation):
         with self.lock:
             self.get_volume()
             for name, vol in self.vol.items():
