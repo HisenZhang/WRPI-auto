@@ -68,9 +68,18 @@ class control:
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
                 self.cyclic_queue.remove(self.cyclic_queue[0])
+                if len(self.cyclic_queue) > 0: # still have content queued
+                    self.preloadNextSound()
+        # TODO REWRITE queue: use pointer to loop/all modes instead of remove (so no need to load sound again)
+
+    def preloadNextSound(self):
+        self.cyclic_queue[0].getData()
+
+    def next(self):
+        self.mixer.fadeout(TRANSITION_LENGTH)
 
     def appendPlayList(self,t:str='show'):
-        
+
         # assume all media in lib normalized.
         l =  self._discoverSound(t)
         for s in l:

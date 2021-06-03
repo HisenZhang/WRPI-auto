@@ -27,17 +27,14 @@ class TUI():
         self.station = station.control()
         self.mixer = self.station.signIn()
 
-        # Register schedule
-        # schedule.every().hour.at(":00").do(play_stationID) # real business here
-        # schedule.every(5).minute.at(":15").do(digest)
         schedule.every().minute.at(":00").do(self.station.ID)  # debugging
         schedule.every().minute.at(":30").do(self.mixer.digest)
-
-        # schedule.every().second.do(self._updateUI)
 
         self.root = root
         self.root.set_on_draw_update_func(self._updateUI)
 
+        
+        self.root.add_key_command(py_cui.keys.KEY_N_LOWER, self.playNext)
         self.root.add_key_command(py_cui.keys.KEY_M_LOWER, self.mixer.mute)
         self.root.add_key_command(py_cui.keys.KEY_M_UPPER, self.mixer.unmute)
         self.root.add_key_command(py_cui.keys.KEY_P_LOWER, self.mixer.pause)
@@ -68,6 +65,10 @@ class TUI():
             ' \[CRITICAL\] ', py_cui.MAGENTA_ON_BLACK, 'contains', match_type='regex')
 
         # logging.info("stdout redirected to logConsole.")
+        
+        # TODO append to playlist
+        # TODO help screen
+
 
         TUIhandler = TUIHandler(self.logConsole)
         TUIhandler.setFormatter(logFormatter)
@@ -198,6 +199,9 @@ class TUI():
         self.station.playControl.removeFromPlayList(idx)
         self.playlist.set_selected_item_index(min(max(idx,0),idx))
 
+    def playNext(self):
+        self.station.playControl.next()
+
     def focusPlaylist(self):
         self.root.move_focus(self.playlist)
     
@@ -210,7 +214,6 @@ class TUI():
     def _updateUI(self):
         logging.debug("TUI update")
         
-        schedule.run_pending()
         self.station.playControl.loop('show')
 
         status = []
