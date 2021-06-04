@@ -178,7 +178,7 @@ class TUI():
         self.playlist.set_selected_item_index(min(currIdx + 1, maxIdx))
 
     def itemMoveTop(self):
-        q = self.station.playControl.cyclic_queue
+        q = self.station.playControl.queue
         currIdx = self.playlist.get_selected_item_index()
         temp = q[currIdx]
         del q[currIdx]
@@ -186,7 +186,7 @@ class TUI():
         self.playlist.set_selected_item_index(0)
 
     def itemMoveBottom(self):
-        q = self.station.playControl.cyclic_queue
+        q = self.station.playControl.queue
         currIdx = self.playlist.get_selected_item_index()
         temp = q[currIdx]
         del q[currIdx]
@@ -238,7 +238,7 @@ class TUI():
 
 
         playIdx = self.playlist.get_selected_item_index()
-        q = self.station.playControl.cyclic_queue
+        q = self.station.playControl.queue
         oldPlaylist = self.playlist.get_item_list()
         newPlaylist = ["{:>3}. [{}] {}".format(i+1,s.strDuration(), s.path) for i,s in enumerate(q)]
         if oldPlaylist != newPlaylist:

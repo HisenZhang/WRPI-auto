@@ -17,7 +17,8 @@ class control:
         self.mixer = m.mixer
         self.channelMap = m.channelMap
         self.channelLastPlayed = m.channelLastPlayed
-        self.cyclic_queue = []  # For play_loop use
+        self.queue = []  # For play_loop use
+        self.mode = 'loop'
         pass
 
     def play_file(self, s: sound, chan: mixer.Channel) -> float:
@@ -54,26 +55,45 @@ class control:
     def _discoverSound(self, t :str):
         return [sound(f) for f in fsUtil.list_sound(t)]
 
+    def setMode(self,m:str):
+        self.mode = m
+
+    def play(self, t:str):
+        if len(self.queue) == 0:
+            self.queue.extend(self._discoverSound(t))
+            if self.mode == 'shuffle':
+                rnd.shuffle(self.queue)
+        else:
+            if not self.channelMap[t].get_busy():
+                s = self.queue[0]
+                self.play_file(s, self.channelMap[t])
+                self.channelLastPlayed[t] = s
+                self.queue.remove(self.queue[0])
+                if len(self.queue) > 0: # still have content queued
+                    self.preloadNextSound()
+
+        pass
+
     def loop(self, t: str):
         """Loop playing all sounds in that type. Needs to be called every time in the main loop.
 
         Args:
             t (str): type of sound
         """
-        if len(self.cyclic_queue) == 0:
-            self.cyclic_queue.extend(self._discoverSound(t))
+        if len(self.queue) == 0:
+            self.queue.extend(self._discoverSound(t))
         else:
             if not self.channelMap[t].get_busy():
-                s = self.cyclic_queue[0]
+                s = self.queue[0]
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
-                self.cyclic_queue.remove(self.cyclic_queue[0])
-                if len(self.cyclic_queue) > 0: # still have content queued
+                self.queue.remove(self.queue[0])
+                if len(self.queue) > 0: # still have content queued
                     self.preloadNextSound()
         # TODO REWRITE queue: use pointer to loop/all modes instead of remove (so no need to load sound again)
 
     def preloadNextSound(self):
-        self.cyclic_queue[0].getData()
+        self.queue[0].getData()
 
     def next(self):
         self.mixer.fadeout(TRANSITION_LENGTH)
@@ -83,17 +103,17 @@ class control:
         # assume all media in lib normalized.
         l =  self._discoverSound(t)
         for s in l:
-            if s not in self.cyclic_queue:
-                self.cyclic_queue.append(s)
+            if s not in self.queue:
+                self.queue.append(s)
 
     def shiftPlayList(self, idx, offset):
         target = idx + offset
         target = max(target, 0)
-        target = min(target, len(self.cyclic_queue)-1)
-        self.cyclic_queue[target], self.cyclic_queue[idx] = self.cyclic_queue[idx], self.cyclic_queue[target]
+        target = min(target, len(self.queue)-1)
+        self.queue[target], self.queue[idx] = self.queue[idx], self.queue[target]
     
     def removeFromPlayList(self,idx):
-        del self.cyclic_queue[idx]
+        del self.queue[idx]
 
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.
