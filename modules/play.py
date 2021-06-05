@@ -15,6 +15,7 @@ from .util import fsUtil
 class control:
     def __init__(self, m: virtualMixerWrapper) -> None:
         self.mixer = m.mixer
+        self.mixerLock = m.lock
         self.channelMap = m.channelMap
         self.channelLastPlayed = m.channelLastPlayed
         self.queue = []  # For play_loop use
@@ -118,16 +119,17 @@ class control:
     def stationID(self):
         """Play randomly selected stationID. Lower show volume during station ID.
         """
-        vol = self.channelMap['show'].get_volume()
-        effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
-        duration = self.random('stationID')
-        if duration > 10:
-            self.channelMap['show'].pause()
-            effect.fadeOut(self.channelMap['show'], 0)
-        while self.channelMap['stationID'].get_busy():
-            time.sleep(1)
-        if duration > 10:
-            self.channelMap['show'].unpause()
-        effect.fadeIn(self.channelMap['show'], vol)
-        logging.info("Station ID sent.")
+        with self.mixerLock:
+            vol = self.channelMap['show'].get_volume()
+            effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
+            duration = self.random('stationID')
+            if duration > 10:
+                self.channelMap['show'].pause()
+                effect.fadeOut(self.channelMap['show'], 0)
+            while self.channelMap['stationID'].get_busy():
+                time.sleep(1)
+            if duration > 10:
+                self.channelMap['show'].unpause()
+            effect.fadeIn(self.channelMap['show'], vol)
+            logging.info("Station ID sent.")
 
