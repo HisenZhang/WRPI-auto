@@ -25,15 +25,16 @@ class TUI():
     def __init__(self, root: py_cui.PyCUI) -> None:
         self.station = station.control()
         self.mixer = self.station.signIn()
+        self.station.systemMonitor()
 
         schedule.every().minute.at(":00").do(self.station.ID)  # debugging
+        schedule.every().minute.at(":15").do(self.station.systemMonitor)
         schedule.every().minute.at(":30").do(self.mixer.digest)
         schedule.every().minute.at(":45").do(self.mixer.volumeGuard)
 
         self.root = root
         self.root.set_on_draw_update_func(self._updateUI)
 
-        
         self.root.add_key_command(py_cui.keys.KEY_N_LOWER, self.playNext)
         self.root.add_key_command(py_cui.keys.KEY_M_LOWER, self.mixer.mute)
         self.root.add_key_command(py_cui.keys.KEY_M_UPPER, self.mixer.unmute)
@@ -65,10 +66,9 @@ class TUI():
             ' \[CRITICAL\] ', py_cui.MAGENTA_ON_BLACK, 'contains', match_type='regex')
 
         # logging.info("stdout redirected to logConsole.")
-        
+
         # TODO append to playlist
         # TODO help screen
-
 
         TUIhandler = TUIHandler(self.logConsole)
         TUIhandler.setFormatter(logFormatter)
@@ -86,15 +86,25 @@ class TUI():
             py_cui.keys.KEY_END, self.itemMoveBottom)
         self.playlist.add_key_command(py_cui.keys.KEY_DELETE, self.itemRemove)
 
-        self.mixerStatus = self.root.add_scroll_menu('Mixer', 2, 0)
+        self.mixerStatus = self.root.add_scroll_menu('Now Playing', 2, 0)
         self.mixerStatus.set_focus_text('Mixer digest.')
 
-        self.resMonitor = self.root.add_scroll_menu('System Resource', 3, 0)
+        self.resMonitor = self.root.add_scroll_menu('System Statitics', 3, 0)
         self.resMonitor.set_focus_text('System info and resource monitor.')
-        
+        self.resMonitor.add_text_color_rule(
+            '\(100%\)', py_cui.CYAN_ON_BLACK, 'contains', match_type='regex')
+        self.resMonitor.add_text_color_rule(
+            '\( 9[0-9]%\)', py_cui.RED_ON_BLACK, 'contains', match_type='regex')
+        self.resMonitor.add_text_color_rule(
+            '\( 8[0-9]%\)', py_cui.YELLOW_ON_BLACK, 'contains', match_type='regex')
+        self.resMonitor.add_text_color_rule(
+            '\( [ 1-7][0-9]%\)', py_cui.GREEN_ON_BLACK, 'contains', match_type='regex')
+
         self.root.add_key_command(py_cui.keys.KEY_Q_LOWER, self.focusPlaylist)
-        self.root.add_key_command(py_cui.keys.KEY_L_LOWER, self.focusLogConsole)
-        self.root.add_key_command(py_cui.keys.KEY_S_LOWER, self.focusLogConsole)
+        self.root.add_key_command(
+            py_cui.keys.KEY_L_LOWER, self.focusLogConsole)
+        self.root.add_key_command(
+            py_cui.keys.KEY_S_LOWER, self.focusResMonitor)
 
         #--------------------------------#
         # logConsole keybinding override #
@@ -182,7 +192,7 @@ class TUI():
         currIdx = self.playlist.get_selected_item_index()
         temp = q[currIdx]
         del q[currIdx]
-        q.insert(0,temp)
+        q.insert(0, temp)
         self.playlist.set_selected_item_index(0)
 
     def itemMoveBottom(self):
@@ -193,27 +203,27 @@ class TUI():
         q.append(temp)
         maxIdx = len(self.playlist._view_items)-1
         self.playlist.set_selected_item_index(maxIdx)
-    
+
     def itemRemove(self):
         idx = self.playlist.get_selected_item_index()
         self.station.playControl.removeFromPlayList(idx)
-        self.playlist.set_selected_item_index(min(max(idx,0),idx))
+        self.playlist.set_selected_item_index(min(max(idx, 0), idx))
 
     def playNext(self):
         self.station.playControl.next()
 
     def focusPlaylist(self):
         self.root.move_focus(self.playlist)
-    
+
     def focusResMonitor(self):
-        self.root.move_focus(self.resMonitor) 
+        self.root.move_focus(self.resMonitor)
 
     def focusLogConsole(self):
-        self.root.move_focus(self.logConsole) 
+        self.root.move_focus(self.logConsole)
 
     def _updateUI(self):
         logging.debug("TUI update")
-        
+
         self.station.playControl.play('show')
 
         status = []
@@ -229,8 +239,10 @@ class TUI():
         self.mixer.get_volume()
         mixerDigest = []
         for chan, sound in self.mixer.channelLastPlayed.items():
-            mixerDigest.append("[{chan: <10}]  ({vol:>3}%) - {sound}".format(
-                chan=chan, vol=int(self.mixer.vol[chan]*100), sound=sound.path))
+            if chan == 'stationID':
+                continue
+            mixerDigest.append("[{chan:^10}]  ({vol:>3}%) - {sound}".format(
+                chan=chan, vol=int(self.mixer.vol[chan]*100), sound=sound.path if sound else '<empty>'))
         oldDigest = self.mixerStatus.get_item_list()
         if oldDigest != mixerDigest:
             self.mixerStatus.clear()
@@ -239,13 +251,29 @@ class TUI():
         # TODO highlight / color playing piece
         q = self.station.playControl.queue
         oldPlaylist = self.playlist.get_item_list()
-        newPlaylist = ["{:>3}. [{}] {}".format(i+1,s.strDuration(), s.path) for i,s in enumerate(q)]
+        newPlaylist = ["{:>3}. [{}] {}".format(
+            i+1, s.strDuration(), s.path) for i, s in enumerate(q)]
         if oldPlaylist != newPlaylist:
             self.playlist.clear()
             self.playlist.add_item_list(newPlaylist)
         totalLength = sum([s.duration for s in q])
         self.playlist.set_title("Media Queue ({}) [{}]".format(
             len(q), conversion.floatToHMS(totalLength)))
+
+        stat = self.station.systemStat
+        self.resMonitor.clear()
+        self.resMonitor.add_item('[ CPU ] ({:>3}%)'.format(round(stat['CPU'])))
+        self.resMonitor.add_item('[ RAM ] ({:>3}%) free:{:>7} GiB total:{:>7} GiB'.format(
+                                                        round(stat['RAM'].percent),
+                                                        round(stat['RAM'].free / (2**30), 1),
+                                                        round(stat['RAM'].total / (2**30), 1)))
+        self.resMonitor.add_item('[ STR ] ({:>3}%) free:{:>7} GiB total:{:>7} GiB'.format(
+                                                        round(stat['storage'].percent),
+                                                        round(stat['storage'].free / (2**30), 1),
+                                                        round(stat['storage'].total / (2**30), 1)))
+        self.resMonitor.add_item('[ PWR ] ({:>3}%) {}'.format(100 if stat['power'] is None else stat['power'].percent,
+                                                              '' if (stat['power'] is None or stat['power'] is False) else 'CHARGING'))
+        pass
 
     def help(self):
         helpText = "Volume control: CTRL-UP/DN " + \
