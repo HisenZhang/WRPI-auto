@@ -107,6 +107,8 @@ class virtualMixerWrapper:
         for i, chan in enumerate(All_CHANNEL):
             self.channelMap[chan]=self.mixer.Channel(i)
         self.channelLastPlayed = {}
+        for _, chan in enumerate(All_CHANNEL):
+            self.channelLastPlayed[chan]=None
         self.vol = {}
         self.muted = False
         self.paused = False

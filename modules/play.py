@@ -127,13 +127,13 @@ class control:
             vol = self.channelMap['show'].get_volume()
             effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
             duration = self.random('stationID')
-            if duration > 10:
-                self.channelMap['show'].pause()
+            if duration > 8:
                 effect.fadeOut(self.channelMap['show'], 0)
+                self.channelMap['show'].pause()                
             while self.channelMap['stationID'].get_busy():
                 time.sleep(1)
-            if duration > 10:
+            if duration > 8:
                 self.channelMap['show'].unpause()
             effect.fadeIn(self.channelMap['show'], vol)
             logging.info("Station ID sent.")
-
+            self.channelLastPlayed['stationID'] = None
