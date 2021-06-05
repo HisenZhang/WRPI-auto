@@ -1,7 +1,6 @@
 from datetime import datetime
 from .logger import rootLogger, logFormatter
 import logging
-from typing import ChainMap
 import py_cui
 import schedule
 import sys
@@ -214,7 +213,7 @@ class TUI():
     def _updateUI(self):
         logging.debug("TUI update")
         
-        self.station.playControl.loop('show')
+        self.station.playControl.play('show')
 
         status = []
         if self.mixer.muted:
@@ -236,8 +235,7 @@ class TUI():
             self.mixerStatus.clear()
             self.mixerStatus.add_item_list(mixerDigest)
 
-
-        playIdx = self.playlist.get_selected_item_index()
+        # TODO highlight / color playing piece
         q = self.station.playControl.queue
         oldPlaylist = self.playlist.get_item_list()
         newPlaylist = ["{:>3}. [{}] {}".format(i+1,s.strDuration(), s.path) for i,s in enumerate(q)]
@@ -247,7 +245,6 @@ class TUI():
         totalLength = sum([s.duration for s in q])
         self.playlist.set_title("Media Queue ({}) [{}]".format(
             len(q), conversion.floatToHMS(totalLength)))
-        self.playlist.set_selected_item_index(playIdx)
 
     def help(self):
         helpText = "Volume control: CTRL-UP/DN " + \

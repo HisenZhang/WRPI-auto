@@ -19,6 +19,7 @@ class control:
         self.channelMap = m.channelMap
         self.channelLastPlayed = m.channelLastPlayed
         self.queue = []  # For play_loop use
+        self.index = 0
         self.mode = 'loop'
         pass
 
@@ -57,46 +58,49 @@ class control:
         return [sound(f) for f in fsUtil.list_sound(t)]
 
     def setMode(self,m:str):
+        assert m in ('loop','shuffle','single','once')
         self.mode = m
+
+    def pullPlayList(self,t:str):
+        self.queue.extend(self._discoverSound(t))
 
     def play(self, t:str):
         if len(self.queue) == 0:
-            self.queue.extend(self._discoverSound(t))
-            if self.mode == 'shuffle':
-                rnd.shuffle(self.queue)
+            self.pullPlayList(t)
+            self.index = -1
         else:
-            if not self.channelMap[t].get_busy():
-                s = self.queue[0]
+            if not self.channelMap[t].get_busy(): # previous sound is over
+                self.channelLastPlayed[t] = ''
+                # update index
+                if self.mode == 'shuffle':
+                    self.index = rnd.randint(0,len(self.queue)-1)
+                elif self.mode in ('loop','once'):
+                    if self.index == len(self.queue)-1: # last one, back to top
+                        self.index = 0
+                        if self.mode == 'once':
+                            self.mixer.fadeout(TRANSITION_LENGTH)
+                    else:
+                        self.index += 1
+                elif self.mode == 'single':
+                    pass # do nothing
+                logging.debug("Next play index {}, sound {}".format(self.index,self.queue[self.index].path))
+                s = self.queue[self.index]
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
-                self.queue.remove(self.queue[0])
-                if len(self.queue) > 0: # still have content queued
+                if (len(self.queue) > 0) and self.mode in ('loop','once'):
                     self.preloadNextSound()
-
         pass
 
-    def loop(self, t: str):
-        """Loop playing all sounds in that type. Needs to be called every time in the main loop.
-
-        Args:
-            t (str): type of sound
-        """
-        if len(self.queue) == 0:
-            self.queue.extend(self._discoverSound(t))
-        else:
-            if not self.channelMap[t].get_busy():
-                s = self.queue[0]
-                self.play_file(s, self.channelMap[t])
-                self.channelLastPlayed[t] = s
-                self.queue.remove(self.queue[0])
-                if len(self.queue) > 0: # still have content queued
-                    self.preloadNextSound()
-        # TODO REWRITE queue: use pointer to loop/all modes instead of remove (so no need to load sound again)
-
     def preloadNextSound(self):
-        self.queue[0].getData()
+        i = int()
+        if self.index == len(self.queue)-1: # last one, back to top
+            i = 0
+        else:
+            i = self.index+1
+        self.queue[i].getData()
 
     def next(self):
+        # TODO multichannel playlist
         self.mixer.fadeout(TRANSITION_LENGTH)
 
     def appendPlayList(self,t:str='show'):

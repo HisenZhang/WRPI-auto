@@ -59,7 +59,7 @@ def routine():
         # loop
         while True:
             schedule.run_pending()
-            station.playControl.loop('show')
+            station.playControl.play('show')
             time.sleep(1)
             pass
 
