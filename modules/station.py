@@ -3,6 +3,7 @@ import multiprocessing
 import time
 import os
 import sys
+import psutil
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
 from .config import LIB_BASE, LOUDNESS, BITRATE, STATION_NAME
@@ -15,6 +16,8 @@ class control:
     def __init__(self) -> None:
         self.mixer = audio.virtualMixerWrapper()
         self.playControl = play.control(self.mixer)
+        self.cwd = os.getcwd()
+        self.systemStat = None
         self.db = TinyDB('db.json')
         pass
 
@@ -85,7 +88,25 @@ class control:
                     p.kill()
 
     def systemMonitor(self):
-        pass
+        try:
+            self.systemStat = {
+                'CPU':psutil.cpu_percent(),
+                'RAM':psutil.virtual_memory(),
+                'storage':psutil.disk_usage(self.cwd),
+                'power':psutil.sensors_battery()
+            }
+            if self.systemStat['CPU'] > 90:
+                logging.warning('CPU usage too high: {}%'.format(self.systemStat['CPU']))
+            if self.systemStat['RAM'].percent > 90:
+                logging.warning('RAM usage too high: {}%'.format(self.systemStat['RAM'].percent))
+            if self.systemStat['storage'].percent > 90:
+                logging.warning('Storage space too full: {}%'.format(self.systemStat['storage'].percent))
+            if self.systemStat['power'] != None and (self.systemStat['power'].percent < 50 and not self.systemStat['power'].power_plugged):
+                logging.warning('Battery not charging: {}%'.format(self.systemStat['power'].percent))
+        except Exception as e:
+            logging.critical("Fail to update system statistics: "+str(e))
+        finally:
+            return self.systemStat
 
     def signOff(self):
         """Release resources.
