@@ -55,6 +55,7 @@ def routine():
         # schedule.every(5).minute.at(":15").do(digest)
         schedule.every().minute.at(":00").do(station.ID)  # debugging
         schedule.every().minute.at(":30").do(mixer.digest)
+        schedule.every().minute.at(":45").do(mixer.volumeGuard)
 
         # loop
         while True:

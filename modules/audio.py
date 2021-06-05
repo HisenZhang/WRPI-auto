@@ -187,6 +187,10 @@ class virtualMixerWrapper:
 
     def get_init(self):
         return self.mixer.get_init()
+    
+    def volumeGuard(self):
+        for _, chan in self.channelMap.items():
+            effect.fadeIn(chan,1)
 
     def destroy(self):
         with self.lock:

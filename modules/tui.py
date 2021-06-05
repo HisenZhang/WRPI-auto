@@ -28,6 +28,7 @@ class TUI():
 
         schedule.every().minute.at(":00").do(self.station.ID)  # debugging
         schedule.every().minute.at(":30").do(self.mixer.digest)
+        schedule.every().minute.at(":45").do(self.mixer.volumeGuard)
 
         self.root = root
         self.root.set_on_draw_update_func(self._updateUI)
