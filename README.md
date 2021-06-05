@@ -15,6 +15,14 @@ Recommended Python version >= 3.8.10
 
 ### 1. Python Modules
 
+Windows:
+
+```bash
+pip install -r windows-requirements.txt
+```
+
+Unix:
+
 ```bash
 pip install -r requirements.txt
 ```
