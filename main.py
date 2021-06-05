@@ -10,9 +10,15 @@ from modules.config import STATION_NAME
 
 
 def runSchedule(station):
+    logging.info("Scheduler started.")
     while station.mixer.get_init():
-        logging.debug("Hello from backgroud thread...")
         schedule.run_pending()
+
+def runTUI(mainWindow):
+    logging.info("TUI starting...")
+    mainWindow.start()
+    logging.info("TUI exited.")
+    
 
 
 def main():
@@ -32,12 +38,16 @@ def main():
             mainWindow.set_title(
                 '{} Broadcast Automation System'.format(STATION_NAME))
             frame = TUI(mainWindow)
+
             daemonThread = threading.Thread(
                 name='Daemon', target=runSchedule, args=(frame.station,), daemon=True)
             daemonThread.start()
-            logging.info("TUI starting...")
-            mainWindow.start()
-            logging.info("TUI exited.")
+
+            TUIThread = threading.Thread(
+                name='TUI', target=runTUI, args=(mainWindow,))
+            TUIThread.start()
+            TUIThread.join()
+            
         except KeyboardInterrupt:
             logging.warning("KeyboardInterrupt detected.")
         except Exception as e:
