@@ -4,7 +4,7 @@ import os
 import time
 import re
 
-from .config import LOG_FORMAT, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_FROMADDR, SMTP_TOADDRS, SMTP_SUBJECT, SMTP_CREDENTIALS, SMTP_SECURE
+from .config import LOG_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS, SMTP_SECURE
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -145,8 +145,8 @@ rootLogger.addHandler(consoleHandler)
 
 if SMTP_ENABLE:
     smtp_handler = logging.handlers.SMTPHandler(mailhost=SMTP_HOST,
-                                                fromaddr=SMTP_FROMADDR,
-                                                toaddrs=SMTP_TOADDRS,
+                                                fromaddr=SMTP_SENDER,
+                                                toaddrs=SMTP_RECPIENTS,
                                                 subject=SMTP_SUBJECT,
                                                 credentials=SMTP_CREDENTIALS,
                                                 secure=SMTP_SECURE)

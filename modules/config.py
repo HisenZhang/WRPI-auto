@@ -12,8 +12,8 @@ LOG_FORMAT = "%(asctime)s - %(threadName)-11s - [%(levelname)s] - %(message)s"
 # SMTP outgoing email alert
 SMTP_ENABLE = False
 SMTP_HOST = 'mailserver',
-SMTP_FROMADDR = 'noreply@example.com'
-SMTP_TOADDRS = ['me@example.com']
+SMTP_SENDER = 'noreply@example.com'
+SMTP_RECPIENTS = ['me@example.com']
 SMTP_SUBJECT = '[WRPI-Alert] WRPI Automation Broadcast System Alert'
 SMTP_CREDENTIALS = ('user', 'pwd')  # ('user','pwd')
 SMTP_SECURE = None  # ('keyfile', 'certificate file'), default None
