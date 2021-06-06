@@ -8,7 +8,6 @@ STATION_NAME = 'WRPI'
 #   LOGGER   #
 #------------#
 
-LOG_BASE = 'log'
 LOG_FORMAT = "%(asctime)s - %(threadName)-10s [%(levelname)s] %(message)s"
 ALERT_FORMAT = """
 Message type:   [%(levelname)s]
@@ -36,6 +35,7 @@ SMTP_CREDENTIALS = ('user', 'pwd')  # ('user','pwd')
 
 EXT_BIN_PATH = 'bin'
 LIB_BASE = 'lib'
+LOG_BASE = 'log'
 
 #------------#
 #   AUDIO    #
