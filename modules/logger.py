@@ -6,7 +6,7 @@ import re
 import smtplib
 import ssl
 
-from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
+from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECIPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -181,7 +181,7 @@ rootLogger.addHandler(consoleHandler)
 if SMTP_ENABLE:
     smtp_handler = SSLSMTPHandler(mailhost=SMTP_HOST,
                                   fromaddr=SMTP_SENDER,
-                                  toaddrs=SMTP_RECPIENTS,
+                                  toaddrs=SMTP_RECIPIENTS,
                                   subject=SMTP_SUBJECT,
                                   credentials=SMTP_CREDENTIALS,
                                   )
