@@ -3,8 +3,10 @@ import logging.handlers
 import os
 import time
 import re
+import smtplib
+import ssl
 
-from .config import LOG_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS, SMTP_SECURE
+from .config import LOG_FORMAT, ALERT_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -128,6 +130,32 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
                     newRolloverAt = newRolloverAt + 3600
         self.rolloverAt = newRolloverAt
 
+class SSLSMTPHandler(logging.handlers.SMTPHandler):
+    def emit(self, record):
+        """
+        Emit a record.
+        """
+        try:
+            context=ssl.create_default_context()
+
+            from email.message import EmailMessage
+            msg = EmailMessage()
+            msg.set_content(self.format(record))
+            msg["Subject"] = self.subject
+            msg["From"] = self.fromaddr
+            msg["To"] = self.toaddrs
+
+            with smtplib.SMTP(self.mailhost, port=587) as smtp:
+                smtp.starttls(context=context)
+                smtp.login(self.username, self.password)
+                smtp.send_message(msg)
+                logging.info("Email alert sent.")
+
+        # except (KeyboardInterrupt, SystemExit):
+        #     raise
+        except Exception as e:
+            self.handleError(record)
+            logging.critical("Fail to send email alert: "+str(e))
 
 logFormatter = logging.Formatter(LOG_FORMAT)
 rootLogger = logging.getLogger()
@@ -144,12 +172,12 @@ consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 
 if SMTP_ENABLE:
-    smtp_handler = logging.handlers.SMTPHandler(mailhost=SMTP_HOST,
-                                                fromaddr=SMTP_SENDER,
-                                                toaddrs=SMTP_RECPIENTS,
-                                                subject=SMTP_SUBJECT,
-                                                credentials=SMTP_CREDENTIALS,
-                                                secure=SMTP_SECURE)
-    smtp_handler.setFormatter(logFormatter)
+    smtp_handler = SSLSMTPHandler(mailhost=SMTP_HOST,
+                                  fromaddr=SMTP_SENDER,
+                                  toaddrs=SMTP_RECPIENTS,
+                                  subject=SMTP_SUBJECT,
+                                  credentials=SMTP_CREDENTIALS,
+                                  )
+    smtp_handler.setFormatter(logging.Formatter(ALERT_FORMAT))
     smtp_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(smtp_handler)

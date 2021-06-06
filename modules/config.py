@@ -8,7 +8,19 @@ STATION_NAME = 'WRPI'
 #   LOGGER   #
 #------------#
 
-LOG_FORMAT = "%(asctime)s - %(threadName)-11s - [%(levelname)s] - %(message)s"
+LOG_FORMAT = "%(asctime)s - %(threadName)-8s - [%(levelname)s] - %(message)s"
+ALERT_FORMAT = """
+Message type:   [%(levelname)s]
+Time:           %(asctime)s
+Location:       %(pathname)s: %(lineno)d
+Module:         %(module)s
+Thread:         %(threadName)s
+Function:       %(funcName)s
+
+Message:
+
+%(message)s
+"""
 # SMTP outgoing email alert
 SMTP_ENABLE = False
 SMTP_HOST = 'mailserver',
