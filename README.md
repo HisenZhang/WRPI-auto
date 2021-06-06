@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 `ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
-Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. See example [directory structure](###Directory-Structure) below.
+Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](###Directory-Structure) below. 
 
 ### 3. Station Configuration
 
@@ -57,9 +57,8 @@ This is an example directory structure on Windows.
 
 ```text
 ./
-│   db.json     // database
+│   db.json     // database (program generated)
 │   main.py     // program entry
-│   WRPI.log    // log file
 │
 ├─bin           // external binaries
 │   ffmpeg.exe  // for audio processing
