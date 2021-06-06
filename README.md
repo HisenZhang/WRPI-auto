@@ -11,7 +11,7 @@ The broadcast automation system for WRPI or general broadcast station. Features 
 
 ## Deployment
 
-### 0. Python
+### 0. Python Environment
 
 Recommended Python version >= 3.8.10
 
@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 `ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
-Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. See example directory structure below.
+Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. See example [directory structure](###Directory-Structure) below.
 
 ### 3. Station Configuration
 
@@ -100,6 +100,20 @@ Use `-h` for help.
 
 ## User Mannual
 
+### Startup procedure
+
 - Set cart computer (this software runs on) system volume to 100%.
 - Set physical mixer channel (e.g. cart channel) to 100% (0dB)
+- Start the program. Refer to section [Run](##Run).
+
+### Logging levels
+
+Severity increases down the list.
+
+- `DEBUG` Very detailed level of output for program debugging & diagnostic purpose.
+- `INFO` Regular information for station logs. **Default level of output.**
+- `WARNING` Program forsee a issue may result in abnormality. 
+  - Will trigger **email alert** and **need manual intervention** on (and beyond) this level.
+- `ERROR` Program can't recover from the issue by itself, but may still proceed.
+- `CRITICAL` Unrecoverable issue. Program halt immediately.
 
