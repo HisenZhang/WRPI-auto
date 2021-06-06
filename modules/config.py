@@ -24,7 +24,7 @@ Message:
 """
 # SMTP outgoing email alert
 SMTP_ENABLE = False
-SMTP_HOST = 'mailserver',
+SMTP_HOST = ('mailserver', 587) # ('host', port)
 SMTP_SENDER = 'noreply@example.com'
 SMTP_RECPIENTS = ['me@example.com']
 SMTP_SUBJECT = '[WRPI-Alert] WRPI Automation Broadcast System Alert'

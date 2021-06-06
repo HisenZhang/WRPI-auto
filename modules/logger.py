@@ -145,7 +145,12 @@ class SSLSMTPHandler(logging.handlers.SMTPHandler):
             msg["From"] = self.fromaddr
             msg["To"] = self.toaddrs
 
-            with smtplib.SMTP(self.mailhost, port=587) as smtp:
+            port = 0
+            if self.mailport:
+                port = self.mailport
+            else:
+                port = 587
+            with smtplib.SMTP(self.mailhost, port) as smtp:
                 smtp.starttls(context=context)
                 smtp.login(self.username, self.password)
                 smtp.send_message(msg)
