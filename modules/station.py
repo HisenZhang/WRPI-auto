@@ -6,7 +6,7 @@ import sys
 import psutil
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
-from .config import LIB_BASE, LOUDNESS, BITRATE, STATION_NAME
+from .config import LIB_BASE, LOUDNESS, BITRATE, STATION_NAME, TRANSITION_LENGTH
 from .util import ffmpegWrapper, fsUtil, db
 from . import audio
 from . import play
@@ -111,6 +111,7 @@ class control:
     def signOff(self):
         """Release resources.
         """
+        self.mixer.fadeout(TRANSITION_LENGTH)
         self.mixer.destroy()
         logging.debug("Mixer Destroyed.")
 
