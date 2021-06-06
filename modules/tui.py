@@ -29,7 +29,7 @@ class TUI():
 
         schedule.every().hour.at("00:00").do(self.station.ID)  # debugging
         schedule.every().minute.at(":15").do(self.station.systemMonitor)
-        schedule.every(5).minute.at(":30").do(self.mixer.digest)
+        schedule.every(5).minutes.at(":30").do(self.mixer.digest)
         schedule.every().minute.at(":45").do(self.mixer.volumeGuard)
 
         self.root = root
