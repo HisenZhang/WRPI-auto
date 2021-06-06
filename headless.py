@@ -51,10 +51,9 @@ def routine():
         mixer = station.signIn()
 
         # Register schedule
-        # schedule.every().hour.at(":00").do(play_stationID) # real business here
-        # schedule.every(5).minute.at(":15").do(digest)
-        schedule.every().minute.at(":00").do(station.ID)  # debugging
-        schedule.every().minute.at(":30").do(mixer.digest)
+        schedule.every().hour.at("00:00").do(station.ID)  
+        schedule.every().minute.at(":15").do(station.systemMonitor)
+        schedule.every(5).minute.at(":30").do(mixer.digest)
         schedule.every().minute.at(":45").do(mixer.volumeGuard)
 
         # loop
