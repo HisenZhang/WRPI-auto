@@ -6,7 +6,7 @@ import re
 import smtplib
 import ssl
 
-from .config import LOG_FORMAT, ALERT_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
+from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, SMTP_SENDER, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -165,7 +165,7 @@ rootLogger.level = logging.INFO
 
 # fileHandler = logging.FileHandler("WRPI.log")
 fileHandler = ParallelTimedRotatingFileHandler(
-    STATION_NAME, postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
+    os.path.join(LOG_BASE, STATION_NAME), postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 

@@ -74,6 +74,9 @@ This is an example directory structure on Windows.
 │          brief.mp3
 │          long.mp3
 │
+├─log           // log files
+│   WRPI.2021-06-06.log
+│
 └─modules       // program modules
 ```
 

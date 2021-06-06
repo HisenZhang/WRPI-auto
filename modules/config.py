@@ -8,7 +8,8 @@ STATION_NAME = 'WRPI'
 #   LOGGER   #
 #------------#
 
-LOG_FORMAT = "%(asctime)s - %(threadName)-8s - [%(levelname)s] - %(message)s"
+LOG_BASE = 'log'
+LOG_FORMAT = "%(asctime)s - %(threadName)-10s [%(levelname)s] %(message)s"
 ALERT_FORMAT = """
 Message type:   [%(levelname)s]
 Time:           %(asctime)s
