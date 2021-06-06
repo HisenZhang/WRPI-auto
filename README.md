@@ -1,15 +1,17 @@
 # WRPI AUTO
 
-The automated broadcast system for WRPI. Features include:
+The broadcast automation system for WRPI or general broadcast station. Features include:
 
-- Scheduled station ID
-- Programmable show
-- Loudness normalization (in LUFS, per EBU R 128)
+- Automated station ID
+- Programmable show schedule
+- Loudness normalization (EBU R 128)
 - Text user interface and headless mode
 - Station logging
 - Email alert
 
 ## Deployment
+
+### 0. Python
 
 Recommended Python version >= 3.8.10
 
@@ -29,7 +31,7 @@ pip install -r requirements.txt
 
 ### 2. ffmpeg & ffprobe
 
-`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4
+`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
 Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. See example directory structure below.
 
@@ -95,6 +97,8 @@ python main.py --headless
 
 Use `-h` for help.
 
-## TODO
+## User Mannual
 
-- Email alert
+- Set cart computer (this software runs on) system volume to 100%.
+- Set physical mixer channel (e.g. cart channel) to 100% (0dB)
+
