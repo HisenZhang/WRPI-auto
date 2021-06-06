@@ -241,7 +241,7 @@ class TUI():
         for chan, sound in self.mixer.channelLastPlayed.items():
             if chan == 'stationID':
                 continue
-            mixerDigest.append("[{chan:^10}]  ({vol:>3}%) - {sound}".format(
+            mixerDigest.append("[{chan:^6}] ({vol:>3}%) {sound}".format(
                 chan=chan, vol=int(self.mixer.vol[chan]*100), sound=sound.path if sound else '<empty>'))
         oldDigest = self.mixerStatus.get_item_list()
         if oldDigest != mixerDigest:
