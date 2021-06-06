@@ -112,7 +112,6 @@ class control:
     def signOff(self):
         """Release resources.
         """
-        self.mixer.fadeout(TRANSITION_LENGTH)
         self.mixer.destroy()
         logging.debug("Mixer Destroyed.")
 
