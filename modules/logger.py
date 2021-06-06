@@ -157,6 +157,8 @@ class SSLSMTPHandler(logging.handlers.SMTPHandler):
             self.handleError(record)
             logging.critical("Fail to send email alert: "+str(e))
 
+# TODO BufferedEmail for daily digest
+
 logFormatter = logging.Formatter(LOG_FORMAT)
 rootLogger = logging.getLogger()
 rootLogger.level = logging.INFO

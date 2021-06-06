@@ -30,7 +30,8 @@ class control:
             logging.critical("Station ID not sent: " + str(e))
             self.signOff()
             sys.exit(0)
-
+    
+    # TODO signIn / Out special audio 
     def signIn(self):
         """Sign in to station to get mixer!
 
