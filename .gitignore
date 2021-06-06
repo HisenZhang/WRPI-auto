@@ -151,3 +151,6 @@ bin/
 
 # misc
 db.json
+
+# config
+modules/config.py
