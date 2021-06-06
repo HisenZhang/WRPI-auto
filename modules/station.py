@@ -51,7 +51,7 @@ class control:
         self.ID()
         return self.mixer
 
-    def loudNorm(self, targets:list[audio.sound]=None):
+    def loudNorm(self, targets:list=None):
         procs = []
 
         if targets is None:
