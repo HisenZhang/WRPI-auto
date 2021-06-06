@@ -37,7 +37,8 @@ Go [http://ffmpeg.org/download.html](http://ffmpeg.org/download.html) to downloa
 
 ### 3. Station Configuration
 
-Modify configs in `modules/config.py` such as station name, audio loudness and quality, etc.
+Create a copy from `modules/sample-config.py`. Rename the copy to `modules/config.py`.
+Then modify configs in `modules/config.py` such as station name, audio loudness and quality, SMTP etc.
 
 ### 4. Import Media
 
