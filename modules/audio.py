@@ -170,6 +170,9 @@ class virtualMixerWrapper:
             self.paused = False
             logging.warning("All channels unpaused.")
 
+    def fadeout(self,length):
+        self.mixer.fadeout(length)
+
     def volumeUp(self):
         with self.lock:
             self.volumeChange(+0.1)
@@ -191,6 +194,8 @@ class virtualMixerWrapper:
         return self.mixer.get_init()
     
     def volumeGuard(self):
+        if self.muted or self.paused:
+            return
         for _, chan in self.channelMap.items():
             effect.fadeIn(chan,1)
 

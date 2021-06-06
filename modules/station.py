@@ -37,7 +37,7 @@ class control:
         Returns:
             virtualMixer: Virtual audio mixer
         """
-        logging.info("Welcome to {stationName} automation system. Signing in.".format(
+        logging.warning("Welcome to {stationName} automation system. Signing in.".format(
             stationName=STATION_NAME))
         try:
             assert len(fsUtil.list_sound('stationID')) > 0
@@ -117,5 +117,5 @@ class control:
         self.db.close()
         logging.debug("Database disconnected.")
 
-        logging.info("{stationName} automation system terminates. Signing off.".format(
+        logging.warning("{stationName} automation system terminates. Signing off.".format(
             stationName=STATION_NAME))
