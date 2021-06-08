@@ -33,12 +33,12 @@ pip install -r requirements.txt
 
 `ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
-Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](###Directory-Structure) below. 
+Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](###Directory-Structure) below. 
 
 ### 3. Station Configuration
 
 Create a copy from `modules/sample-config.py`. Rename the copy to `modules/config.py`.
-Then modify configs in `modules/config.py` such as station name, audio loudness and quality, SMTP etc.
+Then modify configs in `modules/config.py` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the code.
 
 ### 4. Import Media
 
