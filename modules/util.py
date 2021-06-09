@@ -57,8 +57,6 @@ class db:
 class fsUtil:
     # TODO file system watchdog for normalization
     class SoundWatchdogHandler(PatternMatchingEventHandler):
-        patterns = SOUND_FORMAT
-
         def process(self, event):
             """
             event.event_type 
@@ -68,20 +66,25 @@ class fsUtil:
             event.src_path
                 path/to/observed/file
             """
-            # the file will be processed there
-            print(event.src_path, event.event_type)  # print now only for degug
-
-        def on_modified(self, event):
-            self.process(event)
+            logging.info(
+                "fsWatchdog: {} - {}".format(event.src_path, event.event_type))
 
         def on_created(self, event):
             self.process(event)
 
     def fsWatchdogInit():
+        patterns = ['*'+t for t in SOUND_FORMAT]
+        path = os.path.join(os.getcwd(), LIB_BASE)
         observer = Observer()
-        observer.schedule(fsUtil.SoundWatchdogHandler(),
-                          path=os.path.join(os.getcwd(), LIB_BASE))
+        observer.schedule(fsUtil.SoundWatchdogHandler(patterns=patterns,
+                                                      case_sensitive=True),
+                          path=path,
+                          recursive=True)
+        observer.setName('fsWatch')
         observer.start()
+        logging.info("fsWatchdog started.")
+        logging.debug(
+            "Looking for change in {} of following sound types:{}".format(path, patterns))
         return observer
 
     def sha256sum(filename: str) -> str:
@@ -177,8 +180,9 @@ class ffmpegWrapper:
                     "Unexpected output for loudness (float expected): " + loudness)
         except Exception as e:
             logging.error(
-                "Error occured in the ffmpeg loudness detection: " + str(e))
+                "Error occured in the ffmpeg loudness detection: " + str(e) + repr(result))
 
+    # TODO logging is not process safe!
     def normalizeLoudness(file, loudness):
         workerName = multiprocessing.current_process().name
         logging.debug(

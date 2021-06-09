@@ -14,11 +14,11 @@ def runSchedule(station):
     while station.mixer.get_init():
         schedule.run_pending()
 
+
 def runTUI(mainWindow):
     logging.info("TUI starting...")
     mainWindow.start()
     logging.info("TUI exited.")
-    
 
 
 def main():
@@ -47,7 +47,7 @@ def main():
                 name='TUI', target=runTUI, args=(mainWindow,))
             TUIThread.start()
             TUIThread.join()
-            
+
         except KeyboardInterrupt:
             logging.warning("KeyboardInterrupt detected.")
         except Exception as e:
