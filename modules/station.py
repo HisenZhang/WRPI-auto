@@ -19,6 +19,7 @@ class control:
         self.cwd = os.getcwd()
         self.systemStat = None
         self.db = TinyDB('db.json')
+        self.fsWatchdog = fsUtil.fsWatchdogInit()
         pass
 
     def ID(self):
@@ -30,8 +31,8 @@ class control:
             logging.critical("Station ID not sent: " + str(e))
             self.signOff()
             sys.exit(0)
-    
-    # TODO signIn / Out special audio 
+
+    # TODO signIn / Out special audio
     def signIn(self):
         """Sign in to station to get mixer!
 
@@ -52,7 +53,7 @@ class control:
         self.ID()
         return self.mixer
 
-    def loudNorm(self, targets:list=None):
+    def loudNorm(self, targets: list = None):
         procs = []
 
         if targets is None:
@@ -66,7 +67,7 @@ class control:
         else:
             for s in targets:
                 p = audio.effect.normalize(self.db, s)
-        
+
         if len(procs) > 0:
             logging.info("Waiting for loudness normalization...")
 
@@ -91,19 +92,23 @@ class control:
     def systemMonitor(self):
         try:
             self.systemStat = {
-                'CPU':psutil.cpu_percent(),
-                'RAM':psutil.virtual_memory(),
-                'storage':psutil.disk_usage(self.cwd),
-                'power':psutil.sensors_battery()
+                'CPU': psutil.cpu_percent(),
+                'RAM': psutil.virtual_memory(),
+                'storage': psutil.disk_usage(self.cwd),
+                'power': psutil.sensors_battery()
             }
             if self.systemStat['CPU'] > 90:
-                logging.warning('CPU usage too high: {}%'.format(self.systemStat['CPU']))
+                logging.warning('CPU usage too high: {}%'.format(
+                    self.systemStat['CPU']))
             if self.systemStat['RAM'].percent > 90:
-                logging.warning('RAM usage too high: {}%'.format(self.systemStat['RAM'].percent))
+                logging.warning('RAM usage too high: {}%'.format(
+                    self.systemStat['RAM'].percent))
             if self.systemStat['storage'].percent > 90:
-                logging.warning('Storage space too full: {}%'.format(self.systemStat['storage'].percent))
+                logging.warning('Storage space too full: {}%'.format(
+                    self.systemStat['storage'].percent))
             if self.systemStat['power'] != None and (self.systemStat['power'].percent < 50 and not self.systemStat['power'].power_plugged):
-                logging.warning('Battery not charging: {}%'.format(self.systemStat['power'].percent))
+                logging.warning('Battery not charging: {}%'.format(
+                    self.systemStat['power'].percent))
         except Exception as e:
             logging.critical("Fail to update system statistics: "+str(e))
         finally:
@@ -120,3 +125,6 @@ class control:
 
         logging.warning("{stationName} automation system terminates. Signing off.".format(
             stationName=STATION_NAME))
+
+    def __del__(self):
+        self.fsWatchdog.stop()

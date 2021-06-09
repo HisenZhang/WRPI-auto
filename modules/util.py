@@ -6,6 +6,8 @@ import subprocess
 import os
 import multiprocessing
 import pygame
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler
 
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
@@ -54,6 +56,34 @@ class db:
 
 class fsUtil:
     # TODO file system watchdog for normalization
+    class SoundWatchdogHandler(PatternMatchingEventHandler):
+        patterns = SOUND_FORMAT
+
+        def process(self, event):
+            """
+            event.event_type 
+                'modified' | 'created' | 'moved' | 'deleted'
+            event.is_directory
+                True | False
+            event.src_path
+                path/to/observed/file
+            """
+            # the file will be processed there
+            print(event.src_path, event.event_type)  # print now only for degug
+
+        def on_modified(self, event):
+            self.process(event)
+
+        def on_created(self, event):
+            self.process(event)
+
+    def fsWatchdogInit():
+        observer = Observer()
+        observer.schedule(fsUtil.SoundWatchdogHandler(),
+                          path=os.path.join(os.getcwd(), LIB_BASE))
+        observer.start()
+        return observer
+
     def sha256sum(filename: str) -> str:
         """Calculate hash from file in chunks
 
