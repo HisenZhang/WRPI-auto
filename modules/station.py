@@ -19,7 +19,7 @@ class control:
         self.cwd = os.getcwd()
         self.systemStat = None
         self.db = TinyDB('db.json')
-        self.faWatchdog = fsUtil.fsWatchdogInit()
+        self.fsWatchdog = fsUtil.fsWatchdogInit()
         pass
 
     def ID(self):
@@ -125,3 +125,8 @@ class control:
 
         logging.warning("{stationName} automation system terminates. Signing off.".format(
             stationName=STATION_NAME))
+
+    def __del__(self):
+        self.fsWatchdog.unschedule_all()
+        self.fsWatchdog.stop()
+        logging.info("fsWatchdog stopped.")
