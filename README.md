@@ -33,7 +33,7 @@ pip install -r requirements.txt
 
 `ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
-Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](###Directory-Structure) below. 
+Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](#Directory-Structure) below. 
 
 ### 3. Station Configuration
 
@@ -103,7 +103,7 @@ Use `-h` for help.
 
 - Set cart computer (this software runs on) system volume to 100%.
 - Set physical mixer channel (e.g. cart channel) to 100% (0dB)
-- Start the program. Refer to section [Run](##Run).
+- Start the program. Refer to section [Run](#Run).
 
 ### Logging levels
 
