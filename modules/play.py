@@ -35,7 +35,8 @@ class control:
         """
         try:
             chan.play(s.getData(), fade_ms=TRANSITION_LENGTH)
-            logging.info("Playing \"" + s.path + "\" Length " + s.strDuration())
+            logging.info("Playing \"" + s.path +
+                         "\" Length " + s.strDuration())
             return s.getDuration()
         except Exception as e:
             logging.error("Cannot play sound " + s.path + ": " + str(e))
@@ -53,47 +54,48 @@ class control:
             return duration
         except IndexError:
             logging.error("Empty playlist. Not playing.")
-    
-    def _discoverSound(self, t :str):
+
+    def _discoverSound(self, t: str):
         return [sound(f) for f in fsUtil.list_sound(t)]
 
-    def setMode(self,m:str):
-        assert m in ('loop','shuffle','single','once')
+    def setMode(self, m: str):
+        assert m in ('loop', 'shuffle', 'single', 'once')
         self.mode = m
 
-    def pullPlayList(self,t:str):
+    def pullPlayList(self, t: str):
         self.queue.extend(self._discoverSound(t))
 
-    def play(self, t:str):
+    def play(self, t: str):
         if len(self.queue) == 0:
             self.pullPlayList(t)
             self.index = -1
         else:
-            if not self.channelMap[t].get_busy(): # previous sound is over
+            if not self.channelMap[t].get_busy():  # previous sound is over
                 self.channelLastPlayed[t] = ''
                 # update index
                 if self.mode == 'shuffle':
-                    self.index = rnd.randint(0,len(self.queue)-1)
-                elif self.mode in ('loop','once'):
-                    if self.index == len(self.queue)-1: # last one, back to top
+                    self.index = rnd.randint(0, len(self.queue)-1)
+                elif self.mode in ('loop', 'once'):
+                    if self.index == len(self.queue)-1:  # last one, back to top
                         self.index = 0
                         if self.mode == 'once':
                             self.mixer.fadeout(TRANSITION_LENGTH)
                     else:
                         self.index += 1
                 elif self.mode == 'single':
-                    pass # do nothing
-                logging.debug("Next play index {}, sound {}".format(self.index,self.queue[self.index].path))
+                    pass  # do nothing
+                logging.debug("Next play index {}, sound {}".format(
+                    self.index, self.queue[self.index].path))
                 s = self.queue[self.index]
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
-                if (len(self.queue) > 0) and self.mode in ('loop','once'):
+                if (len(self.queue) > 0) and self.mode in ('loop', 'once'):
                     self.preloadNextSound()
         pass
 
     def preloadNextSound(self):
         i = int()
-        if self.index == len(self.queue)-1: # last one, back to top
+        if self.index == len(self.queue)-1:  # last one, back to top
             i = 0
         else:
             i = self.index+1
@@ -103,10 +105,10 @@ class control:
         # TODO multichannel playlist
         self.mixer.fadeout(TRANSITION_LENGTH)
 
-    def appendPlayList(self,t:str='show'):
+    def appendPlayList(self, t: str = 'show'):
 
         # assume all media in lib normalized.
-        l =  self._discoverSound(t)
+        l = self._discoverSound(t)
         for s in l:
             if s not in self.queue:
                 self.queue.append(s)
@@ -116,8 +118,8 @@ class control:
         target = max(target, 0)
         target = min(target, len(self.queue)-1)
         self.queue[target], self.queue[idx] = self.queue[idx], self.queue[target]
-    
-    def removeFromPlayList(self,idx):
+
+    def removeFromPlayList(self, idx):
         del self.queue[idx]
 
     def stationID(self):
@@ -129,7 +131,7 @@ class control:
             duration = self.random('stationID')
             if duration > 8:
                 effect.fadeOut(self.channelMap['show'], 0)
-                self.channelMap['show'].pause()                
+                self.channelMap['show'].pause()
             while self.channelMap['stationID'].get_busy():
                 time.sleep(1)
             if duration > 8:
