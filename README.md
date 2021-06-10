@@ -97,7 +97,7 @@ python main.py --headless
 
 Use `-h` for help.
 
-## User Mannual
+## User Manual
 
 ### Startup procedure
 
