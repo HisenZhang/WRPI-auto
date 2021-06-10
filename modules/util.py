@@ -6,6 +6,8 @@ import subprocess
 import os
 import multiprocessing
 import pygame
+from watchdog.observers import Observer
+from watchdog.events import PatternMatchingEventHandler
 
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
@@ -54,6 +56,37 @@ class db:
 
 class fsUtil:
     # TODO file system watchdog for normalization
+    class SoundWatchdogHandler(PatternMatchingEventHandler):
+        def process(self, event):
+            """
+            event.event_type 
+                'modified' | 'created' | 'moved' | 'deleted'
+            event.is_directory
+                True | False
+            event.src_path
+                path/to/observed/file
+            """
+            logging.info(
+                "fsWatchdog: {} - {}".format(event.src_path, event.event_type))
+
+        def on_created(self, event):
+            self.process(event)
+
+    def fsWatchdogInit():
+        patterns = ['*'+t for t in SOUND_FORMAT]
+        path = os.path.join(os.getcwd(), LIB_BASE)
+        observer = Observer()
+        observer.schedule(fsUtil.SoundWatchdogHandler(patterns=patterns,
+                                                      case_sensitive=True),
+                          path=path,
+                          recursive=True)
+        observer.setName('fsWatch')
+        observer.start()
+        logging.info("fsWatchdog started.")
+        logging.debug(
+            "Looking for change in {} of following sound types:{}".format(path, patterns))
+        return observer
+
     def sha256sum(filename: str) -> str:
         """Calculate hash from file in chunks
 
@@ -147,8 +180,9 @@ class ffmpegWrapper:
                     "Unexpected output for loudness (float expected): " + loudness)
         except Exception as e:
             logging.error(
-                "Error occured in the ffmpeg loudness detection: " + str(e))
+                "Error occured in the ffmpeg loudness detection: " + str(e) + repr(result))
 
+    # TODO logging is not process safe!
     def normalizeLoudness(file, loudness):
         workerName = multiprocessing.current_process().name
         logging.debug(
