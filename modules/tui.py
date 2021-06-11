@@ -272,7 +272,7 @@ class TUI():
                                                         round(stat['storage'].free / (2**30), 1),
                                                         round(stat['storage'].total / (2**30), 1)))
         self.resMonitor.add_item('[ PWR ] ({:>3}%) {}'.format(100 if stat['power'] is None else stat['power'].percent,
-                                                              '' if (stat['power'] is None or stat['power'] is False) else 'CHARGING'))
+                                                              '' if (stat['power'] is None or stat['power'].power_plugged is False) else 'CHARGING'))
         pass
 
     def help(self):

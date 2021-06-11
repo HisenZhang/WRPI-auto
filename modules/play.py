@@ -6,6 +6,7 @@ from os.path import join
 import random as rnd
 
 from pygame import mixer
+import pygame
 
 from .audio import virtualMixerWrapper, effect, sound
 from .config import LIB_BASE, TRANSITION_LENGTH, SURPRESSION_FACTOR
@@ -38,6 +39,8 @@ class control:
             logging.info("Playing \"" + s.path +
                          "\" Length " + s.strDuration())
             return s.getDuration()
+        except pygame.error as e:
+            logging.error("pygame error: " + str(e))
         except Exception as e:
             logging.error("Cannot play sound " + s.path + ": " + str(e))
 
