@@ -111,8 +111,8 @@ Severity increases down the list.
 
 - `DEBUG` Very detailed level of output for program debugging & diagnostic purpose.
 - `INFO` Regular information for station logs. **Default level of output.**
-- `WARNING` Program forsee a issue may result in abnormality. 
+- `WARNING` Program foresees a issue may result in abnormality. 
   - Will trigger **email alert** and **need manual intervention** on (and beyond) this level.
 - `ERROR` Program can't recover from the issue by itself, but may still proceed.
-- `CRITICAL` Unrecoverable issue. Program halt immediately.
+- `CRITICAL` Unrecoverable issue. Program halts immediately.
 

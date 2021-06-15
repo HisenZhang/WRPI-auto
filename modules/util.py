@@ -217,6 +217,6 @@ class ffmpegWrapper:
             logging.error("Permission error: " + str(e))
         except Exception as e:
             logging.error(
-                "Error occured in the loudness normalization: " + str(e))
+                "Error occurred in the loudness normalization: " + str(e))
         finally:
             logging.debug("Worker " + workerName + " ends.")
