@@ -6,7 +6,9 @@ import re
 import smtplib
 import ssl
 
-from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, STATION_NAME, SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECIPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
+from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, STATION_NAME
+from .config import SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECIPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
+from .config import DISCORD_AGENT, DISCORD_ENABLE, DISCORD_WEBHOOK, DISCORD_RECIPIENTS
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -188,3 +190,10 @@ if SMTP_ENABLE:
     smtp_handler.setFormatter(logging.Formatter(ALERT_FORMAT))
     smtp_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(smtp_handler)
+
+if DISCORD_ENABLE:
+    from discord_handler import DiscordHandler
+    discord_handler = DiscordHandler(DISCORD_WEBHOOK, DISCORD_AGENT, notify_users=DISCORD_RECIPIENTS)
+    discord_handler.setFormatter(logging.Formatter(ALERT_FORMAT))
+    discord_handler.setLevel(logging.WARNING)
+    rootLogger.addHandler(discord_handler)

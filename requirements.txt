@@ -3,3 +3,4 @@ schedule==1.1.0
 tinydb==4.4.0
 psutil==5.8.0
 py-cui==0.1.3
+discord-handler==0.0.2

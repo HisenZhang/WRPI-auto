@@ -29,6 +29,12 @@ SMTP_RECIPIENTS = ['me@example.com']
 SMTP_SUBJECT = '[WRPI-Alert] WRPI Automation Broadcast System Alert'
 SMTP_CREDENTIALS = ('user', 'pwd')  # ('user','pwd')
 
+# DISCORD alert
+DISCORD_ENABLE = False
+DISCORD_WEBHOOK = 'YOUR WEB HOOK HERE'
+DISCORD_AGENT = 'AGENT NAME'
+DISCORD_RECIPIENTS = ['everyone']
+
 #------------#
 #    PATH    #
 #------------#
