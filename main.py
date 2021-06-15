@@ -57,6 +57,9 @@ def main():
                 frame.station.signOff()
             sys.exit(0)
 
+# TODO turn this into a package at first major released 
+# packaging: https://uoftcoders.github.io/studyGroup/lessons/python/packages/lesson/
+# with CLI: https://medium.com/nerd-for-tech/how-to-build-and-distribute-a-cli-tool-with-python-537ae41d9d78 
 
 if __name__ == "__main__":
     main()
