@@ -67,12 +67,12 @@ class fsUtil:
                 path/to/observed/file
             """
             logging.info(
-                "fsWatchdog: {} - {}".format(event.src_path, event.event_type))
+                "libWatchdog: {} - {}".format(event.src_path, event.event_type))
 
         def on_created(self, event):
             self.process(event)
 
-    def fsWatchdogInit():
+    def libWatchdogInit():
         patterns = ['*'+t for t in SOUND_FORMAT]
         path = os.path.join(os.getcwd(), LIB_BASE)
         observer = Observer()
@@ -80,9 +80,9 @@ class fsUtil:
                                                       case_sensitive=True),
                           path=path,
                           recursive=True)
-        observer.setName('fsWatch')
+        observer.setName('libWatch')
         observer.start()
-        logging.info("fsWatchdog started.")
+        logging.info("libWatchdog started.")
         logging.debug(
             "Looking for change in {} of following sound types:{}".format(path, patterns))
         return observer

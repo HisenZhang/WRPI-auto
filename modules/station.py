@@ -19,7 +19,7 @@ class control:
         self.cwd = os.getcwd()
         self.systemStat = None
         self.db = TinyDB('db.json')
-        self.fsWatchdog = fsUtil.fsWatchdogInit()
+        self.libWatchdog = fsUtil.libWatchdogInit()
         pass
 
     def ID(self):
@@ -127,6 +127,6 @@ class control:
             stationName=STATION_NAME))
 
     def __del__(self):
-        self.fsWatchdog.unschedule_all()
-        self.fsWatchdog.stop()
-        logging.info("fsWatchdog stopped.")
+        self.libWatchdog.unschedule_all()
+        self.libWatchdog.stop()
+        logging.info("libWatchdog stopped.")
