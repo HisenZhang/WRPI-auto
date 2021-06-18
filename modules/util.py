@@ -8,6 +8,8 @@ import multiprocessing
 import pygame
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
+import yaml
+import munch
 
 
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
@@ -27,6 +29,31 @@ class Singleton(object):
 
     def init(self, *args, **kwds):
         pass
+
+
+class config(Singleton):
+    # https://martin-thoma.com/configuration-files-in-python/
+    def __init__(self) -> None:
+        self.cfg = None
+        self.load()
+
+    def load(self, filename='config.yml'):
+        with open(filename, "r") as ymlfile:
+            d = yaml.safe_load(ymlfile)
+        self.cfg = munch.munchify(d)
+
+    def get(self):
+        return self.cfg
+
+    def reload(self):
+        try:
+            self.load('config.yml')
+            logging.info('Config hot reload successfully.')
+        except Exception as e:
+            logging.error('Config hot reload error: ' + str(e))
+
+
+configManager = config()
 
 
 class db(Singleton):
@@ -99,6 +126,32 @@ class fsUtil:
         logging.info("libWatchdog started.")
         logging.debug(
             "Looking for change in {} of following sound types:{}".format(path, patterns))
+        return observer
+
+    # config hot reload
+    class ConfigWatchdogHandler(PatternMatchingEventHandler):
+        def process(self, event):
+            global configManager
+            logging.info(
+                "configWatchdog: {} - {}".format(event.src_path, event.event_type))
+            configManager.reload()
+
+        def on_modified(self, event):
+            self.process(event)
+
+    def configWatchdogInit():
+        patterns = ['*.yml']
+        path = os.getcwd()
+        observer = Observer()
+        observer.schedule(fsUtil.ConfigWatchdogHandler(patterns=patterns,
+                                                       case_sensitive=True),
+                          path=path,
+                          recursive=True)
+        observer.setName('configWatch')
+        observer.start()
+        logging.info("configWatchdog started.")
+        logging.debug(
+            "Looking for config change recursively in {} of following config types:{}".format(path, patterns))
         return observer
 
     def sha256sum(filename: str) -> str:
