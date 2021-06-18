@@ -10,7 +10,7 @@ import pygame
 
 from .audio import virtualMixerWrapper, effect, sound
 from .config import LIB_BASE, TRANSITION_LENGTH, SURPRESSION_FACTOR
-from .util import fsUtil
+from .util import ffmpegWrapper, fsUtil
 
 
 class control:
@@ -109,11 +109,10 @@ class control:
         self.mixer.fadeout(TRANSITION_LENGTH)
 
     def appendPlayList(self, t: str = 'show'):
-
-        # assume all media in lib normalized.
         l = self._discoverSound(t)
         for s in l:
             if s not in self.queue:
+                effect.normalize(s)
                 self.queue.append(s)
 
     def shiftPlayList(self, idx, offset):
