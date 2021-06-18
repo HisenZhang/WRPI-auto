@@ -153,4 +153,4 @@ bin/
 db.json
 
 # config
-modules/config.py
+config.yml
