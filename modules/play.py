@@ -9,8 +9,7 @@ from pygame import mixer
 import pygame
 
 from .audio import virtualMixerWrapper, effect, sound
-from .config import LIB_BASE, TRANSITION_LENGTH, SURPRESSION_FACTOR
-from .util import ffmpegWrapper, fsUtil
+from .util import configManager, ffmpegWrapper, fsUtil
 
 
 class control:
@@ -35,7 +34,8 @@ class control:
             float: duration of the sound file
         """
         try:
-            chan.play(s.getData(), fade_ms=TRANSITION_LENGTH)
+            chan.play(
+                s.getData(), fade_ms=configManager.cfg.audio.transition_length)
             logging.info("Playing \"" + s.path +
                          "\" Length " + s.strDuration())
             return s.getDuration()
@@ -73,7 +73,7 @@ class control:
             self.pullPlayList(t)
             self.index = -1
         else:
-            if not self.channelMap[t].get_busy():  # previous sound is over                
+            if not self.channelMap[t].get_busy():  # previous sound is over
                 self.channelLastPlayed[t] = ''
                 self.queue[self.index].unloadData()
                 # update index
@@ -83,7 +83,8 @@ class control:
                     if self.index == len(self.queue)-1:  # last one, back to top
                         self.index = 0
                         if self.mode == 'once':
-                            self.mixer.fadeout(TRANSITION_LENGTH)
+                            self.mixer.fadeout(
+                                configManager.cfg.audio.transition_length)
                     else:
                         self.index += 1
                 elif self.mode == 'single':
@@ -94,19 +95,20 @@ class control:
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
                 if (len(self.queue) > 0) and self.mode in ('loop', 'once'):
+                    # TODO make this dynamic based on free memory
                     self.preloadNextSound(1)
         pass
 
-    def preloadNextSound(self,lookahead=1):
+    def preloadNextSound(self, lookahead=1):
         idx = self.index
         for _ in range(lookahead):
-            i = (idx+1)%len(self.queue)
+            i = (idx+1) % len(self.queue)
             self.queue[i].getData()
             idx += 1
 
     def next(self):
         # TODO multichannel playlist
-        self.mixer.fadeout(TRANSITION_LENGTH)
+        self.mixer.fadeout(configManager.cfg.audio.transition_length)
 
     def appendPlayList(self, t: str = 'show'):
         l = self._discoverSound(t)
@@ -129,7 +131,8 @@ class control:
         """
         with self.mixerLock:
             vol = self.channelMap['show'].get_volume()
-            effect.fadeOut(self.channelMap['show'], SURPRESSION_FACTOR*vol)
+            effect.fadeOut(self.channelMap['show'],
+                           configManager.cfg.audio.surpression_factor*vol)
             duration = self.random('stationID')
             if duration > 8:
                 effect.fadeOut(self.channelMap['show'], 0)

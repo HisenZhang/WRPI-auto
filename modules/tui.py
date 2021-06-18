@@ -7,8 +7,7 @@ import sys
 import types
 
 from modules import station
-from modules.config import STATION_NAME
-from modules.util import conversion
+from modules.util import configManager, conversion
 
 
 class TUIHandler(logging.Handler):
@@ -35,6 +34,7 @@ class TUI():
         self.root = root
         self.root.set_on_draw_update_func(self._updateUI)
 
+        self.root.add_key_command(py_cui.keys.KEY_I_LOWER, self.station.ID)
         self.root.add_key_command(py_cui.keys.KEY_N_LOWER, self.playNext)
         self.root.add_key_command(py_cui.keys.KEY_M_LOWER, self.mixer.mute)
         self.root.add_key_command(py_cui.keys.KEY_M_UPPER, self.mixer.unmute)
@@ -234,12 +234,12 @@ class TUI():
         statusString = ' '.join(status)
         t = datetime.now()
         self.root.set_title(
-            '{} {} Broadcast Automation System {}'.format(statusString, STATION_NAME, t.strftime("%b-%d-%Y %H:%M:%S")))
+            '{} {} Broadcast Automation System {}'.format(statusString, configManager.cfg.station.name, t.strftime("%b-%d-%Y %H:%M:%S")))
 
         self.mixer.get_volume()
         mixerDigest = []
         for chan, sound in self.mixer.channelLastPlayed.items():
-            if chan == 'stationID':
+            if chan == 'stationID' or chan is None:
                 continue
             mixerDigest.append("[{chan:^6}] ({vol:>3}%) {sound}".format(
                 chan=chan, vol=int(self.mixer.vol[chan]*100), sound=sound.path if sound else '<empty>'))
@@ -264,13 +264,13 @@ class TUI():
         self.resMonitor.clear()
         self.resMonitor.add_item('[ CPU ] ({:>3}%)'.format(round(stat['CPU'])))
         self.resMonitor.add_item('[ RAM ] ({:>3}%) free:{:>7} GiB total:{:>7} GiB'.format(
-                                                        round(stat['RAM'].percent),
-                                                        round(stat['RAM'].free / (2**30), 1),
-                                                        round(stat['RAM'].total / (2**30), 1)))
+            round(stat['RAM'].percent),
+            round(stat['RAM'].free / (2**30), 1),
+            round(stat['RAM'].total / (2**30), 1)))
         self.resMonitor.add_item('[ STR ] ({:>3}%) free:{:>7} GiB total:{:>7} GiB'.format(
-                                                        round(stat['storage'].percent),
-                                                        round(stat['storage'].free / (2**30), 1),
-                                                        round(stat['storage'].total / (2**30), 1)))
+            round(stat['storage'].percent),
+            round(stat['storage'].free / (2**30), 1),
+            round(stat['storage'].total / (2**30), 1)))
         self.resMonitor.add_item('[ PWR ] ({:>3}%) {}'.format(100 if stat['power'] is None else stat['power'].percent,
                                                               '' if (stat['power'] is None or stat['power'].power_plugged is False) else 'CHARGING'))
         pass

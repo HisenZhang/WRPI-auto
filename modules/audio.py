@@ -6,12 +6,11 @@ from pygame import mixer
 import asyncio
 
 from tinydb import TinyDB, Query, utils  # lightweight DB based on JSON
+from .util import configManager, fsUtil, db, ffmpegWrapper, conversion
 
-from .config import TRANSITION_LENGTH, LOUDNESS, USER_CHANNEL
-from .util import fsUtil, db, ffmpegWrapper, conversion
 
 class sound:
-    def __init__(self,filename,duration=None) -> None:
+    def __init__(self, filename, duration=None) -> None:
         self.path = filename
         self.data = None
         self.duration = duration
@@ -38,12 +37,13 @@ class sound:
     def __str__(self) -> str:
         return self.path
 
+
 class effect:
     def fadeOut(chan: mixer.Channel, desired_vol: int = 0):
-        asyncio.run(effect._fadeOut(chan,desired_vol))
+        asyncio.run(effect._fadeOut(chan, desired_vol))
 
     def fadeIn(chan: mixer.Channel, desired_vol: int = 0):
-        asyncio.run(effect._fadeIn(chan,desired_vol))
+        asyncio.run(effect._fadeIn(chan, desired_vol))
 
     async def _fadeOut(chan: mixer.Channel, desired_vol: int = 0):
         """Fade out effect
@@ -53,10 +53,10 @@ class effect:
             desired_vol (int, optional): the vol after fading. Assumed lower than original. Defaults to 0.
         """
         vol = chan.get_volume()
-        for i in range(1, TRANSITION_LENGTH):
-            await asyncio.sleep(1/TRANSITION_LENGTH)
-            chan.set_volume((TRANSITION_LENGTH-i) /
-                            TRANSITION_LENGTH*(vol-desired_vol)+desired_vol)
+        for i in range(1, configManager.cfg.audio.transition_length):
+            await asyncio.sleep(1/configManager.cfg.audio.transition_length)
+            chan.set_volume((configManager.cfg.audio.transition_length-i) /
+                            configManager.cfg.audio.transition_length*(vol-desired_vol)+desired_vol)
         # Avoid float point error builds up
         chan.set_volume(desired_vol)
 
@@ -68,20 +68,24 @@ class effect:
             desired_vol (int, optional): the vol after fading. Assumed higher than original. Defaults to 1.
         """
         vol = chan.get_volume()
-        for i in range(1, TRANSITION_LENGTH):
-            await asyncio.sleep(1/TRANSITION_LENGTH)
-            chan.set_volume(i/TRANSITION_LENGTH*(desired_vol-vol)+vol)
+        for i in range(1, configManager.cfg.audio.transition_length):
+            await asyncio.sleep(1/configManager.cfg.audio.transition_length)
+            chan.set_volume(i/configManager.cfg.audio.transition_length *
+                            (desired_vol-vol)+vol)
         # Avoid float point error builds up
         chan.set_volume(desired_vol)
 
     def normalize(file: str):
-        if abs(ffmpegWrapper.getLoudness(file) - LOUDNESS) > 1.7: # allow +/- 1.5 LUFS error
-            p = effect._normalize(file, LOUDNESS)
+        # allow +/- 1.5 LUFS error
+        if abs(ffmpegWrapper.getLoudness(file) - configManager.cfg.audio.loudness) > configManager.cfg.audio.loudness_tolerant:
+            p = effect._normalize(file, configManager.cfg.audio.loudness)
             return p
         else:
             return None
 
-    def _normalize(file, loudness: int = -23):
+    def _normalize(file, loudness: None):
+        if loudness is None:
+            loudness = configManager.cfg.audio.loudness
         try:
             assert loudness <= 0
         except AssertionError:
@@ -100,15 +104,15 @@ class virtualMixerWrapper:
         self.lock = threading.RLock()
         self.mixer = mixer
         self.mixer.init()
-        All_CHANNEL = DEFAULT_CHANNEL + USER_CHANNEL
+        All_CHANNEL = DEFAULT_CHANNEL + configManager.cfg.audio.user_channels
         self.mixer.set_num_channels(len(All_CHANNEL))
         self.mixer.music.set_volume(1)
         self.channelMap = {}
         for i, chan in enumerate(All_CHANNEL):
-            self.channelMap[chan]=self.mixer.Channel(i)
+            self.channelMap[chan] = self.mixer.Channel(i)
         self.channelLastPlayed = {}
         for _, chan in enumerate(All_CHANNEL):
-            self.channelLastPlayed[chan]=None
+            self.channelLastPlayed[chan] = None
         self.vol = {}
         self.muted = False
         self.paused = False
@@ -170,7 +174,7 @@ class virtualMixerWrapper:
             self.paused = False
             logging.warning("All channels unpaused.")
 
-    def fadeout(self,length):
+    def fadeout(self, length):
         self.mixer.fadeout(length)
 
     def volumeUp(self):
@@ -192,16 +196,16 @@ class virtualMixerWrapper:
 
     def get_init(self):
         return self.mixer.get_init()
-    
+
     def volumeGuard(self):
         if self.muted or self.paused:
             return
         for _, chan in self.channelMap.items():
-            effect.fadeIn(chan,1)
+            effect.fadeIn(chan, 1)
 
     def destroy(self):
         with self.lock:
             if self.mixer.get_init():
-                self.mixer.fadeout(TRANSITION_LENGTH)
+                self.mixer.fadeout(configManager.cfg.audio.transition_length)
                 self.mixer.stop()
             self.mixer.quit()

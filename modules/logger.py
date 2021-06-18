@@ -6,9 +6,7 @@ import re
 import smtplib
 import ssl
 
-from .config import LOG_BASE, LOG_FORMAT, ALERT_FORMAT, STATION_NAME
-from .config import SMTP_ENABLE, SMTP_HOST, SMTP_SENDER, SMTP_RECIPIENTS, SMTP_SUBJECT, SMTP_CREDENTIALS
-from .config import DISCORD_AGENT, DISCORD_ENABLE, DISCORD_WEBHOOK, DISCORD_RECIPIENTS
+from .util import configManager
 
 
 class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler):
@@ -132,13 +130,14 @@ class ParallelTimedRotatingFileHandler(logging.handlers.TimedRotatingFileHandler
                     newRolloverAt = newRolloverAt + 3600
         self.rolloverAt = newRolloverAt
 
+
 class SSLSMTPHandler(logging.handlers.SMTPHandler):
     def emit(self, record):
         """
         Emit a record.
         """
         try:
-            context=ssl.create_default_context()
+            context = ssl.create_default_context()
 
             from email.message import EmailMessage
             msg = EmailMessage()
@@ -166,13 +165,13 @@ class SSLSMTPHandler(logging.handlers.SMTPHandler):
 
 # TODO BufferedEmail for daily digest
 
-logFormatter = logging.Formatter(LOG_FORMAT)
+
+logFormatter = logging.Formatter(configManager.cfg.logger.log_format)
 rootLogger = logging.getLogger()
 rootLogger.level = logging.INFO
 
-# fileHandler = logging.FileHandler("WRPI.log")
 fileHandler = ParallelTimedRotatingFileHandler(
-    os.path.join(LOG_BASE, STATION_NAME), postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
+    os.path.join(configManager.cfg.path.lib, configManager.cfg.station.name), postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
@@ -180,20 +179,26 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 
-if SMTP_ENABLE:
-    smtp_handler = SSLSMTPHandler(mailhost=SMTP_HOST,
-                                  fromaddr=SMTP_SENDER,
-                                  toaddrs=SMTP_RECIPIENTS,
-                                  subject=SMTP_SUBJECT,
-                                  credentials=SMTP_CREDENTIALS,
+smtp_configManager = configManager.cfg.alert.smtp
+if smtp_configManager.enable:
+    smtp_handler = SSLSMTPHandler(mailhost=(smtp_configManager.host, smtp_configManager.port),
+                                  fromaddr=smtp_configManager.sender,
+                                  toaddrs=smtp_configManager.recipients,
+                                  subject=smtp_configManager.subject,
+                                  credentials=(smtp_configManager.username,
+                                               smtp_configManager.password),
                                   )
-    smtp_handler.setFormatter(logging.Formatter(ALERT_FORMAT))
+    smtp_handler.setFormatter(logging.Formatter(
+        configManager.cfg.logger.alert_format))
     smtp_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(smtp_handler)
 
-if DISCORD_ENABLE:
+discord_configManager = configManager.cfg.alert.discord
+if discord_configManager.enable:
     from discord_handler import DiscordHandler
-    discord_handler = DiscordHandler(DISCORD_WEBHOOK, DISCORD_AGENT, notify_users=DISCORD_RECIPIENTS)
-    discord_handler.setFormatter(logging.Formatter(ALERT_FORMAT))
+    discord_handler = DiscordHandler(
+        discord_configManager.werbhook, discord_configManager.agent, notify_users=discord_configManager.mentions)
+    discord_handler.setFormatter(logging.Formatter(
+        configManager.cfg.logger.alert_format))
     discord_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(discord_handler)

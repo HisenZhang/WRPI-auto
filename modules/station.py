@@ -1,3 +1,5 @@
+from . import play
+from . import audio
 import logging
 import multiprocessing
 import time
@@ -6,10 +8,7 @@ import sys
 import psutil
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
-from .config import LIB_BASE, LOUDNESS, BITRATE, STATION_NAME, TRANSITION_LENGTH
-from .util import ffmpegWrapper, fsUtil, db
-from . import audio
-from . import play
+from .util import configManager, ffmpegWrapper, fsUtil, db
 
 
 class control:
@@ -30,8 +29,7 @@ class control:
             self.playControl.stationID()
         except Exception as e:
             logging.critical("Station ID not sent: " + str(e))
-            self.signOff()
-            sys.exit(0)
+            self.mixer.pause()
 
     # TODO signIn / Out special audio
     def signIn(self):
@@ -41,7 +39,7 @@ class control:
             virtualMixer: Virtual audio mixer
         """
         logging.warning("Welcome to {stationName} automation system. Signing in.".format(
-            stationName=STATION_NAME))
+            stationName=configManager.cfg.station.name))
         try:
             assert len(fsUtil.list_sound('stationID')) > 0
         except AssertionError:
@@ -59,7 +57,8 @@ class control:
 
         if targets is None:
             # get sub dirs in lib using magic
-            subDir = [d[1] for d in os.walk(LIB_BASE) if d[1]][0]
+            subDir = [d[1]
+                      for d in os.walk(configManager.cfg.path.lib) if d[1]][0]
             for sub in subDir:
                 for s in fsUtil.list_sound(sub):
                     p = audio.effect.normalize(s)
@@ -83,7 +82,7 @@ class control:
                     p[0].close()
                     file = p[1]
                     db.setRecord(self.db, file, fsUtil.sha256sum(
-                        file), LOUDNESS, BITRATE)
+                        file), configManager.cfg.audio.loudness, configManager.cfg.audio.bitrate)
                     procs.remove(p)
             except Exception as e:
                 logging.error("Process error: " + str(e))
@@ -98,16 +97,18 @@ class control:
                 'storage': psutil.disk_usage(self.cwd),
                 'power': psutil.sensors_battery()
             }
-            if self.systemStat['CPU'] > 90:
+            if self.systemStat['CPU'] > configManager.cfg.alert.threshold.cpu:
                 logging.warning('CPU usage too high: {}%'.format(
                     self.systemStat['CPU']))
-            if self.systemStat['RAM'].percent > 90:
+            if self.systemStat['RAM'].percent > configManager.cfg.alert.threshold.ram:
                 logging.warning('RAM usage too high: {}%'.format(
                     self.systemStat['RAM'].percent))
-            if self.systemStat['storage'].percent > 90:
+            if self.systemStat['storage'].percent > configManager.cfg.alert.threshold.storage:
                 logging.warning('Storage space too full: {}%'.format(
                     self.systemStat['storage'].percent))
-            if self.systemStat['power'] != None and (self.systemStat['power'].percent < 50 and not self.systemStat['power'].power_plugged):
+            if self.systemStat['power'] != None and \
+                (self.systemStat['power'].percent < configManager.cfg.alert.threshold.power and
+                    not self.systemStat['power'].power_plugged):
                 logging.warning('Battery not charging: {}%'.format(
                     self.systemStat['power'].percent))
         except Exception as e:
@@ -125,7 +126,7 @@ class control:
         logging.debug("Database disconnected.")
 
         logging.warning("{stationName} automation system terminates. Signing off.".format(
-            stationName=STATION_NAME))
+            stationName=configManager.cfg.station.name))
 
     def __del__(self):
         for wd in self.watchdogs:

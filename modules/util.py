@@ -6,15 +6,13 @@ import subprocess
 import os
 import multiprocessing
 import pygame
+from tinydb import TinyDB, Query  # lightweight DB based on JSON
 from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 import yaml
 import munch
 
-
-from tinydb import TinyDB, Query  # lightweight DB based on JSON
-
-from .config import LIB_BASE, EXT_BIN_PATH, BITRATE, LOUDNESS, SOUND_FORMAT
+# TODO hot patch
 
 
 class Singleton(object):
@@ -73,7 +71,7 @@ class db(Singleton):
         if len(data) == 0:
             return False
         else:
-            return data[0]['loudness'] == LOUDNESS
+            return data[0]['loudness'] == configManager.cfg.audio.loudness
 
     def setRecord(con: TinyDB, n: str, h: str, l: int, b: str):
         """Insert record to database
@@ -109,13 +107,14 @@ class fsUtil:
             """
             logging.info(
                 "libWatchdog: {} - {}".format(event.src_path, event.event_type))
+            # normalize
 
         def on_created(self, event):
             self.process(event)
 
     def libWatchdogInit():
-        patterns = ['*'+t for t in SOUND_FORMAT]
-        path = os.path.join(os.getcwd(), LIB_BASE)
+        patterns = ['*'+t for t in configManager.cfg.audio.formats]
+        path = os.path.join(os.getcwd(), configManager.cfg.path.lib)
         observer = Observer()
         observer.schedule(fsUtil.SoundWatchdogHandler(patterns=patterns,
                                                       case_sensitive=True),
@@ -180,7 +179,9 @@ class fsUtil:
         Returns:
             list: a list of sound files
         """
-        return [os.path.join(LIB_BASE, t, f) for f in os.listdir(os.path.join(LIB_BASE, t)) if f.lower().endswith(SOUND_FORMAT)]
+        return [os.path.join(configManager.cfg.path.lib, t, f) for f in
+                os.listdir(os.path.join(configManager.cfg.path.lib, t))
+                if f.lower().endswith(tuple(configManager.cfg.audio.formats))]
 
     def soundDuration(file: str):
         s = pygame.mixer.Sound(file)
@@ -203,7 +204,7 @@ class ffmpegWrapper:
             prog = "./ffprobe"
         try:
             try:
-                result = subprocess.run([os.path.join(EXT_BIN_PATH, prog), '-v', 'error', '-show_entries', 'format=duration', '-of',
+                result = subprocess.run([os.path.join(configManager.cfg.path.bin, prog), '-v', 'error', '-show_entries', 'format=duration', '-of',
                                         'default=noprint_wrappers=1:nokey=1', file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 logging.debug("getLength output: "+repr(result))
             except PermissionError as e:
@@ -231,7 +232,7 @@ class ffmpegWrapper:
         try:
             # run command
             try:
-                result = subprocess.run([os.path.join(EXT_BIN_PATH, prog), '-i', file, '-hide_banner', '-filter_complex',
+                result = subprocess.run([os.path.join(configManager.cfg.path.bin, prog), '-i', file, '-hide_banner', '-filter_complex',
                                         'ebur128', '-f', 'null', '-'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                 logging.debug("getLength output: "+repr(result))
             except PermissionError as e:
@@ -262,9 +263,9 @@ class ffmpegWrapper:
         try:
             os.rename(file, file+".normalizing")
             cmd = '"{prog}" -y -i "{infile}" -af loudnorm=I={loudness}:LRA=7:tp=-2 -b:a "{bitrate}" -f mp3 "{outfile}"'.format(
-                prog=os.path.join(EXT_BIN_PATH, prog),
+                prog=os.path.join(configManager.cfg.path.bin, prog),
                 loudness=loudness,
-                bitrate=str(BITRATE),
+                bitrate=str(configManager.cfg.audio.bitrate),
                 infile=file+".normalizing",
                 outfile=file+".normalized")
 
@@ -287,21 +288,3 @@ class ffmpegWrapper:
                 "Error occurred in the loudness normalization: " + str(e))
         finally:
             logging.debug("Worker " + workerName + " ends.")
-
-
-class config(Singleton):
-    # https://martin-thoma.com/configuration-files-in-python/
-    def __init__(self) -> None:
-        self.cfg = None
-        self.load()
-
-    def load(self, filename='config.yml'):
-        d = yaml.safe_load(filename)
-        self.cfg = munch(d)
-
-    def get(self):
-        return self.cfg
-
-    def reload(self):
-        if self.cfg is not None:
-            self.load('config.yml')
