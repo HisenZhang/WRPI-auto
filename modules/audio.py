@@ -75,7 +75,7 @@ class effect:
         chan.set_volume(desired_vol)
 
     def normalize(file: str):
-        if abs(ffmpegWrapper.getLoudness(file) - LOUDNESS) > 1.5: # allow +/- 1.5 LUFS error
+        if abs(ffmpegWrapper.getLoudness(file) - LOUDNESS) > 1.7: # allow +/- 1.5 LUFS error
             p = effect._normalize(file, LOUDNESS)
             return p
         else:
