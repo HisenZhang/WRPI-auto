@@ -234,3 +234,21 @@ class ffmpegWrapper:
                 "Error occurred in the loudness normalization: " + str(e))
         finally:
             logging.debug("Worker " + workerName + " ends.")
+
+
+class config(Singleton):
+    # https://martin-thoma.com/configuration-files-in-python/
+    def __init__(self) -> None:
+        self.cfg = None
+        self.load()
+
+    def load(self, filename='config.yml'):
+        d = yaml.safe_load(filename)
+        self.cfg = munch(d)
+
+    def get(self):
+        return self.cfg
+
+    def reload(self):
+        if self.cfg is not None:
+            self.load('config.yml')
