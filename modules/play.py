@@ -73,8 +73,9 @@ class control:
             self.pullPlayList(t)
             self.index = -1
         else:
-            if not self.channelMap[t].get_busy():  # previous sound is over
+            if not self.channelMap[t].get_busy():  # previous sound is over                
                 self.channelLastPlayed[t] = ''
+                self.queue[self.index].unloadData()
                 # update index
                 if self.mode == 'shuffle':
                     self.index = rnd.randint(0, len(self.queue)-1)
@@ -93,16 +94,15 @@ class control:
                 self.play_file(s, self.channelMap[t])
                 self.channelLastPlayed[t] = s
                 if (len(self.queue) > 0) and self.mode in ('loop', 'once'):
-                    self.preloadNextSound()
+                    self.preloadNextSound(1)
         pass
 
-    def preloadNextSound(self):
-        i = int()
-        if self.index == len(self.queue)-1:  # last one, back to top
-            i = 0
-        else:
-            i = self.index+1
-        self.queue[i].getData()
+    def preloadNextSound(self,lookahead=1):
+        idx = self.index
+        for _ in range(lookahead):
+            i = (idx+1)%len(self.queue)
+            self.queue[i].getData()
+            idx += 1
 
     def next(self):
         # TODO multichannel playlist
