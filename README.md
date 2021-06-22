@@ -1,13 +1,14 @@
 # WRPI AUTO
 
-The broadcast automation system for WRPI or general broadcast station. Features include:
+The broadcast automation system for WRPI or any general broadcast station. Features include:
 
 - Automated station ID
 - Programmable show schedule
 - Loudness normalization (EBU R 128)
+- Configuration hot reload
 - Text user interface and headless mode
 - Station logging
-- Email alert
+- Email/Discord alert
 
 ## Deployment
 
