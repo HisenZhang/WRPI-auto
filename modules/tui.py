@@ -259,8 +259,12 @@ class TUI(Singleton):
             self.playlist.clear()
             self.playlist.add_item_list(newPlaylist)
         totalLength = sum([s.duration for s in q])
-        self.playlist.set_title("Media Queue ({}) [{}]".format(
-            len(q), conversion.floatToHMS(totalLength)))
+        remainingLength = sum([s.duration for s in q if q.index(s) > idx])
+        self.playlist.set_title("Media Queue ({items}) Rem [{remain}] Tot [{total}]".format(
+            items=len(q),
+            remain=conversion.floatToHMS(remainingLength),
+            total=conversion.floatToHMS(totalLength)
+        ))
 
         stat = self.station.systemStat
         self.resMonitor.clear()
