@@ -18,6 +18,7 @@ class control:
         self.cwd = os.getcwd()
         self.systemStat = None
         self.db = db()
+        self.lastSignIn = None
         try:
             self.db.connect('db.json')
         except IOError as e:
@@ -37,10 +38,10 @@ class control:
 
     def scheduleInit(self):
         cfg = configManager.cfg.schedule
-        schedule.every(cfg.stationID.interval).minutes.at(
-            cfg.stationID.time).do(self.systemMonitor)
         schedule.every(cfg.systemMonitor.interval).minutes.at(
-            cfg.systemMonitor.time).do(self.ID)
+            cfg.systemMonitor.time).do(self.systemMonitor)
+        schedule.every(cfg.stationID.interval).hours.at(
+            cfg.stationID.time).do(self.ID)
         schedule.every(cfg.mixerDigest.interval).minutes.at(
             cfg.mixerDigest.time).do(self.mixer.digest)
         schedule.every(cfg.volumeGuard.interval).minutes.at(
@@ -68,6 +69,7 @@ class control:
         self.loudNorm()
         logging.info("All sounds in lib normalized.")
         self.ID()
+        self.lastSignIn = time.time()
         return self.mixer
 
     def loudNorm(self, targets: list = None):
@@ -137,17 +139,23 @@ class control:
     def signOff(self):
         """Release resources.
         """
+
+        for wd in self.watchdogs:
+            wd.unschedule_all()
+            wd.stop()
+            logging.info("{} stopped.".format(wd.name))
+
         self.mixer.destroy()
         logging.debug("Mixer Destroyed.")
 
-        self.db.close()
+        self.db.disconnect()
         logging.debug("Database disconnected.")
 
         logging.warning("{stationName} automation system terminates. Signing off.".format(
             stationName=configManager.cfg.station.name))
 
+        self.lastSignIn = None
+
     def __del__(self):
-        for wd in self.watchdogs:
-            wd.unschedule_all()
-            wd.stop()
-            logging.info("{} stopped.".format(wd.name))
+        if self.lastSignIn is not None:
+            self.signOff()
