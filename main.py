@@ -1,7 +1,6 @@
 import headless
 import argparse
 import threading
-import schedule
 import sys
 import logging
 import py_cui
@@ -12,7 +11,7 @@ from modules.util import configManager
 def runSchedule(station):
     logging.info("Scheduler started.")
     while station.mixer.get_init():
-        schedule.run_pending()
+        station.scheduleRun()
 
 
 def runTUI(mainWindow):

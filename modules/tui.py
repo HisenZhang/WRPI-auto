@@ -2,7 +2,6 @@ from datetime import datetime
 from .logger import rootLogger, logFormatter
 import logging
 import py_cui
-import schedule
 import sys
 import types
 
@@ -26,10 +25,7 @@ class TUI():
         self.mixer = self.station.signIn()
         self.station.systemMonitor()
 
-        schedule.every().hour.at("00:00").do(self.station.ID)  # debugging
-        schedule.every().minute.at(":15").do(self.station.systemMonitor)
-        schedule.every(5).minutes.at(":30").do(self.mixer.digest)
-        schedule.every().minute.at(":45").do(self.mixer.volumeGuard)
+        self.station.scheduleInit()
 
         self.root = root
         self.root.set_on_draw_update_func(self._updateUI)

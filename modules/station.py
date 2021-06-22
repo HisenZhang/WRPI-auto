@@ -6,9 +6,10 @@ import time
 import os
 import sys
 import psutil
+import schedule
 from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
-from .util import configManager, ffmpegWrapper, fsUtil, db
+from .util import configManager, fsUtil, db
 
 
 class control:
@@ -30,6 +31,20 @@ class control:
         except Exception as e:
             logging.critical("Station ID not sent: " + str(e))
             self.mixer.pause()
+
+    def scheduleInit(self):
+        cfg = configManager.cfg.schedule
+        schedule.every(cfg.stationID.interval).minutes.at(
+            cfg.stationID.time).do(self.systemMonitor)
+        schedule.every(cfg.systemMonitor.interval).minutes.at(
+            cfg.systemMonitor.time).do(self.ID)
+        schedule.every(cfg.mixerDigest.interval).minutes.at(
+            cfg.mixerDigest.time).do(self.mixer.digest)
+        schedule.every(cfg.volumeGuard.interval).minutes.at(
+            cfg.volumeGuard.time).do(self.mixer.volumeGuard)
+
+    def scheduleRun(self):
+        schedule.run_pending()
 
     # TODO signIn / Out special audio
     def signIn(self):

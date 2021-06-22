@@ -31,7 +31,6 @@
 # OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-import schedule
 import time
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
@@ -45,27 +44,24 @@ from modules.station import control
 def routine():
     """Defining station routine.
     """
-    try:    
+    try:
         # At startup
         station = control()
-        mixer = station.signIn()
+        station.signIn()
 
         # Register schedule
-        schedule.every().hour.at("00:00").do(station.ID)  
-        schedule.every().minute.at(":15").do(station.systemMonitor)
-        schedule.every(5).minutes.at(":30").do(mixer.digest)
-        schedule.every().minute.at(":45").do(mixer.volumeGuard)
+        station.scheduleInit()
 
         # loop
         while True:
-            schedule.run_pending()
+            station.scheduleRun()
             station.playControl.play('show')
             time.sleep(1)
             pass
 
     except KeyboardInterrupt:
         logger.rootLogger.warning("KeyboardInterrupt detected.")
-    
+
     finally:
         station.signOff()
 
