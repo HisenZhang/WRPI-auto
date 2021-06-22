@@ -7,7 +7,6 @@ import os
 import sys
 import psutil
 import schedule
-from tinydb import TinyDB, Query  # lightweight DB based on JSON
 
 from .util import configManager, fsUtil, db
 
@@ -18,7 +17,11 @@ class control:
         self.playControl = play.control(self.mixer)
         self.cwd = os.getcwd()
         self.systemStat = None
-        self.db = TinyDB('db.json')
+        self.db = db()
+        try:
+            self.db.connect('db.json')
+        except IOError as e:
+            logging.critical("Cannot connect to database: "+str(e))
         self.watchdogs = [fsUtil.libWatchdogInit(),
                           fsUtil.configWatchdogInit()]
         pass
@@ -96,7 +99,7 @@ class control:
                 for p in procs:  # t = (thread, file)
                     p[0].close()
                     file = p[1]
-                    db.setRecord(self.db, file, fsUtil.sha256sum(
+                    self.db.setRecord(file, fsUtil.sha256sum(
                         file), configManager.cfg.audio.loudness, configManager.cfg.audio.bitrate)
                     procs.remove(p)
             except Exception as e:
