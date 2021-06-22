@@ -55,14 +55,19 @@ configManager = config()
 
 
 class db(Singleton):
-    def __init__(self) -> None:
+    def __init__(self, filename=None) -> None:
         super().__init__()
         self.conn = None
+        if filename is not None:
+            self.connect()
 
-    def connect(self):
+    def connect(self, filename: str):
         if self.conn is not None:
             self.disconnect()
-        self.conn = TinyDB('db.json')
+        if filename:
+            self.conn = TinyDB()
+        else:
+            self.conn = TinyDB(configManager.cfg.path.db)
 
     def disconnect(self):
         if self.conn:
