@@ -145,7 +145,7 @@ class fsUtil:
         observer.schedule(fsUtil.ConfigWatchdogHandler(patterns=patterns,
                                                        case_sensitive=True),
                           path=path,
-                          recursive=True)
+                          recursive=False)
         observer.setName('configWatch')
         observer.start()
         logging.info("configWatchdog started.")
