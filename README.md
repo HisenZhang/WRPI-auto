@@ -37,8 +37,7 @@ Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables
 
 ### 3. Station Configuration
 
-Create a copy from `modules/sample-config.py`. Rename the copy to `modules/config.py`.
-Then modify configs in `modules/config.py` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the code.
+Create a copy from `doc/sample-config.py` to the side of `main.py` in the project base directory. Rename the copy to `config.py`. Then modify configs in `config.py` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the code.
 
 ### 4. Import Media
 
@@ -53,7 +52,7 @@ You are free to add more categories.
 
 ### Directory Structure
 
-This is an example directory structure on Windows.
+This is an example directory structure on Windows. Some files are ignored 
 
 ```text
 ./
@@ -63,6 +62,9 @@ This is an example directory structure on Windows.
 ├─bin           // external binaries
 │   ffmpeg.exe  // for audio processing
 |   ffprobe.exe
+│
+├─doc           // documentation
+│   sample.config.yml   // sample config file
 │
 ├─lib           // sound library
 │  ├─fill
