@@ -167,6 +167,7 @@ class SSLSMTPHandler(logging.handlers.SMTPHandler):
 
 
 logFormatter = logging.Formatter(configManager.cfg.logger.log_format)
+alertFormatter = logging.Formatter(configManager.cfg.logger.alert_format)
 rootLogger = logging.getLogger()
 rootLogger.level = logging.INFO
 
@@ -179,6 +180,11 @@ consoleHandler = logging.StreamHandler()
 consoleHandler.setFormatter(logFormatter)
 rootLogger.addHandler(consoleHandler)
 
+consoleDetailHandler = logging.StreamHandler()
+consoleDetailHandler.setFormatter(alertFormatter)
+consoleDetailHandler.setLevel(logging.ERROR)
+rootLogger.addHandler(consoleDetailHandler)
+
 smtp_configManager = configManager.cfg.alert.smtp
 if smtp_configManager.enable:
     smtp_handler = SSLSMTPHandler(mailhost=(smtp_configManager.host, smtp_configManager.port),
@@ -188,8 +194,7 @@ if smtp_configManager.enable:
                                   credentials=(smtp_configManager.username,
                                                smtp_configManager.password),
                                   )
-    smtp_handler.setFormatter(logging.Formatter(
-        configManager.cfg.logger.alert_format))
+    smtp_handler.setFormatter(alertFormatter)
     smtp_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(smtp_handler)
 
@@ -198,7 +203,6 @@ if discord_configManager.enable:
     from discord_handler import DiscordHandler
     discord_handler = DiscordHandler(
         discord_configManager.werbhook, discord_configManager.agent, notify_users=discord_configManager.mentions)
-    discord_handler.setFormatter(logging.Formatter(
-        configManager.cfg.logger.alert_format))
+    discord_handler.setFormatter(alertFormatter)
     discord_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(discord_handler)
