@@ -55,7 +55,20 @@ configManager = config()
 
 
 class db(Singleton):
-    def isNormalized(con: TinyDB, h: str) -> bool:
+    def __init__(self) -> None:
+        super().__init__()
+        self.conn = None
+
+    def connect(self):
+        if self.conn is not None:
+            self.disconnect()
+        self.conn = TinyDB('db.json')
+
+    def disconnect(self):
+        if self.conn:
+            self.conn.close()
+
+    def isNormalized(self, h: str) -> bool:
         """Test if file with given hash has been normalized
 
         Args:
@@ -65,7 +78,7 @@ class db(Singleton):
         Returns:
             bool: is the sound normalized
         """
-        table = con.table('sound')
+        table = self.conn.table('sound')
         q = Query()
         data = table.search(q.hash == h)
         if len(data) == 0:
@@ -73,7 +86,7 @@ class db(Singleton):
         else:
             return data[0]['loudness'] == configManager.cfg.audio.loudness
 
-    def setRecord(con: TinyDB, n: str, h: str, l: int, b: str):
+    def setRecord(self, n: str, h: str, l: int, b: str):
         """Insert record to database
 
         Args:
@@ -83,7 +96,7 @@ class db(Singleton):
             l (int): loudness in LUFS
             b (str): bitrate
         """
-        table = con.table('sound')
+        table = self.conn.table('sound')
         q = Query()
         table.upsert({'name': n,
                       'hash': h,
@@ -91,6 +104,9 @@ class db(Singleton):
                       'bitrate': b},
                      q.hash == h)
         pass
+
+    def __del__(self):
+        self.disconnect()
 
 
 class fsUtil:
