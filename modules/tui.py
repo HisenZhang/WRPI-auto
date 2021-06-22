@@ -72,6 +72,8 @@ class TUI(Singleton):
 
         self.playlist = self.root.add_scroll_menu(
             'Media Queue', 0, 0, row_span=2)
+        self.playlist.add_text_color_rule(
+            ' *', py_cui.GREEN_ON_BLACK, 'endswith', match_type='region', region=[0, 1023])
         self.playlist.set_focus_text(
             '[PGUP] [PGDN] [HOME] [END] [DEL] Move selected item. ENTER to defocus.')
         self.playlist.add_key_command(py_cui.keys.KEY_PAGE_UP, self.itemMoveUp)
@@ -244,11 +246,15 @@ class TUI(Singleton):
             self.mixerStatus.clear()
             self.mixerStatus.add_item_list(mixerDigest)
 
-        # TODO highlight / color playing piece
+        # TODO update index after reordering
         q = self.station.playControl.queue
         oldPlaylist = self.playlist.get_item_list()
         newPlaylist = ["{:>3}. [{}] {}".format(
             i+1, s.strDuration(), s.path) for i, s in enumerate(q)]
+        idx = self.station.playControl.index
+        if idx != -1:  # -1 when initialized
+            newPlaylist[idx] += ' *'
+
         if oldPlaylist != newPlaylist:
             self.playlist.clear()
             self.playlist.add_item_list(newPlaylist)
