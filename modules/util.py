@@ -59,13 +59,13 @@ class db(Singleton):
         super().__init__()
         self.conn = None
         if filename is not None:
-            self.connect()
+            self.connect(filename)
 
     def connect(self, filename: str):
         if self.conn is not None:
             self.disconnect()
         if filename:
-            self.conn = TinyDB()
+            self.conn = TinyDB(filename)
         else:
             self.conn = TinyDB(configManager.cfg.path.db)
 
