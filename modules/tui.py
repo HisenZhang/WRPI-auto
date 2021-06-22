@@ -6,7 +6,7 @@ import sys
 import types
 
 from modules import station
-from modules.util import configManager, conversion
+from modules.util import configManager, conversion, Singleton
 
 
 class TUIHandler(logging.Handler):
@@ -19,7 +19,7 @@ class TUIHandler(logging.Handler):
             self.parent.write(self.format(record))
 
 
-class TUI():
+class TUI(Singleton):
     def __init__(self, root: py_cui.PyCUI) -> None:
         self.station = station.control()
         self.mixer = self.station.signIn()

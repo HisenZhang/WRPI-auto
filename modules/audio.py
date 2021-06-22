@@ -6,7 +6,7 @@ from pygame import mixer
 import asyncio
 
 from tinydb import TinyDB, Query, utils  # lightweight DB based on JSON
-from .util import configManager, fsUtil, db, ffmpegWrapper, conversion
+from .util import configManager, fsUtil, db, ffmpegWrapper, conversion, Singleton
 
 
 class sound:
@@ -98,7 +98,7 @@ class effect:
         return p
 
 
-class virtualMixerWrapper:
+class virtualMixerWrapper(Singleton):
     def __init__(self) -> None:
         DEFAULT_CHANNEL = ["stationID", "show", "fill", "PSA"]
         self.lock = threading.RLock()
