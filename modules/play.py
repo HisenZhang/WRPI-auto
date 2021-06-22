@@ -2,14 +2,13 @@ import datetime
 import logging
 import threading
 import time
-from os.path import join
 import random as rnd
 
 from pygame import mixer
 import pygame
 
 from .audio import virtualMixerWrapper, effect, sound
-from .util import configManager, ffmpegWrapper, fsUtil
+from .util import configManager, fsUtil
 
 
 class control:

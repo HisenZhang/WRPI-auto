@@ -5,8 +5,7 @@ import logging
 from pygame import mixer
 import asyncio
 
-from tinydb import TinyDB, Query, utils  # lightweight DB based on JSON
-from .util import configManager, fsUtil, db, ffmpegWrapper, conversion, Singleton
+from .util import configManager, ffmpegWrapper, conversion, Singleton
 
 
 class sound:
