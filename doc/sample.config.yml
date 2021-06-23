@@ -29,6 +29,7 @@ path:
   bin: bin
   lib: lib
   log: log
+  db: db.json
 audio:
   transition_length: 1000
   surpression_factor: 0.3
@@ -42,3 +43,16 @@ audio:
   loudness_tolerant: 1.7
   user_channels:
     -
+schedule:
+  stationID:
+    interval: 1 # hour
+    time: "00:00"
+  systemMonitor: 
+    interval: 3 # minute
+    time: ":15"
+  mixerDigest:
+    interval: 5 # minute
+    time: ":30"
+  volumeGuard:
+    interval: 1 # minute
+    time: ":45"
