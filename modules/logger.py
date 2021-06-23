@@ -172,7 +172,7 @@ rootLogger = logging.getLogger()
 rootLogger.level = logging.INFO
 
 fileHandler = ParallelTimedRotatingFileHandler(
-    os.path.join(configManager.cfg.path.lib, configManager.cfg.station.name), postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
+    os.path.join(configManager.cfg.path.log, configManager.cfg.station.name), postfix='.log', encoding='utf-8', when='midnight', backupCount=0)
 fileHandler.setFormatter(logFormatter)
 rootLogger.addHandler(fileHandler)
 
