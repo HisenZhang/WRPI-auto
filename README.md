@@ -10,112 +10,42 @@ The broadcast automation system for WRPI or any general broadcast station. Featu
 - Station logging
 - Email/Discord alert
 
+```text
+                   WRPI Broadcast Automation System Jun-23-2021 02:28:53             
++-- Media Queue (9) ---------+  +-- Station Log ---------------------------------------------+  
+|   1. [0:08:16] lib\show\Bo |  | 2021-06-23 02:22:14,252 - Daemon     [INFO] Scheduler star |  
+|   2. [0:03:44] lib\show\Le |  | 2021-06-23 02:22:14,252 - TUI        [INFO] TUI starting.. |  
+|   3. [0:02:22] lib\show\My |  | 2021-06-23 02:22:18,091 - TUI        [INFO] Playing "lib\s |  
+|   4. [0:04:37] lib\show\O  |  | 2021-06-23 02:24:15,003 - Daemon     [WARNING] RAM usage t |  
+|   5. [0:03:02] lib\show\So |  | 2021-06-23 02:26:30,000 - Daemon     [INFO] Mixer digest:  |  
+|   6. [0:04:13] lib\show\WR |  |                                                            |  
+|   7. [0:06:37] lib\show\wr |  |                                                            |  
+|   8. [0:05:40] lib\show\WR |  |                                                            |  
+|   9. [0:01:08] lib\show\WR |  |                                                            |  
+|                            |  |                                                            |  
+|                            |  |                                                            |  
+|                            |  |                                                            |  
++----------------------------+  |                                                            |  
++-- Now Playing -------------+  |                                                            |  
+| [ show ] (100%) lib\show\B |  |                                                            |  
+| [ fill ] (100%) <empty>    |  |                                                            |  
+| [ PSA  ] (100%) <empty>    |  |                                                            |  
+|                            |  |                                                            |  
++----------------------------+  |                                                            |  
++-- System Statitics --------+  |                                                            |  
+| [ CPU ] (  9%)             |  |                                                            |  
+| [ RAM ] ( 94%) free:    0. |  |                                                            |  
+| [ STR ] ( 38%) free:  315. |  |                                                            |  
+| [ PWR ] (100%)             |  |                                                            |  
++----------------------------+  +------------------------------------------------------------+ 
+[M]ute [P]ause [CTRL]+[UP/DN]Volume [H]elp [Q]uit - Use arrow keys to navigate. ENTER to focus. 
+```  
+
 ## Deployment
 
-### 0. Python Environment
+Refer to [deployment](doc/manual/user.md#Deployment) section in `doc/manual/user.md`.
 
-Recommended Python version >= 3.8.10
+## Documentation
 
-### 1. Python Modules
-
-Windows:
-
-```bash
-pip install -r windows-requirements.txt
-```
-
-Unix:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 2. ffmpeg & ffprobe
-
-`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
-
-Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](#Directory-Structure) below. 
-
-### 3. Station Configuration
-
-Create a copy from `doc/sample-config.py` to the side of `main.py` in the project base directory. Rename the copy to `config.py`. Then modify configs in `config.py` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the code.
-
-### 4. Import Media
-
-All media used are stored in `lib/` under different category organized by folders. Here are some default ones:
-
-- stationID
-- show
-- PSA
-- fill
-
-You are free to add more categories.
-
-### Directory Structure
-
-This is an example directory structure on Windows. Some files are ignored 
-
-```text
-./
-│   db.json     // database (program generated)
-│   main.py     // program entry
-│
-├─bin           // external binaries
-│   ffmpeg.exe  // for audio processing
-|   ffprobe.exe
-│
-├─doc           // documentation
-│   sample.config.yml   // sample config file
-│
-├─lib           // sound library
-│  ├─fill
-│  ├─PSA
-│  ├─show
-│  │    show1.mp3
-│  │    show2.mp3
-│  │    show3.mp3
-│  │
-│  └─stationID
-│          brief.mp3
-│          long.mp3
-│
-├─log           // log files
-│   WRPI.2021-06-06.log
-│
-└─modules       // program modules
-```
-
-## Run
-
-For text user interface (TUI):
-
-```bash
-python main.py
-```
-
-Headless mode (no UI, no control):
-```bash
-python main.py --headless
-```
-
-Use `-h` for help.
-
-## User Manual
-
-### Startup procedure
-
-- Set cart computer (this software runs on) system volume to 100%.
-- Set physical mixer channel (e.g. cart channel) to 100% (0dB)
-- Start the program. Refer to section [Run](#Run).
-
-### Logging levels
-
-Severity increases down the list.
-
-- `DEBUG` Very detailed level of output for program debugging & diagnostic purpose.
-- `INFO` Regular information for station logs. **Default level of output.**
-- `WARNING` Program foresees a issue may result in abnormality. 
-  - Will trigger **email alert** and **need manual intervention** on (and beyond) this level.
-- `ERROR` Program can't recover from the issue by itself, but may still proceed.
-- `CRITICAL` Unrecoverable issue. Program halts immediately.
+Checkout user manual and programming manual in `doc/` folder.
 
