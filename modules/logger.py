@@ -202,7 +202,7 @@ discord_configManager = configManager.cfg.alert.discord
 if discord_configManager.enable:
     from discord_handler import DiscordHandler
     discord_handler = DiscordHandler(
-        discord_configManager.werbhook, discord_configManager.agent, notify_users=discord_configManager.mentions)
+        discord_configManager.webhook, discord_configManager.agent, notify_users=discord_configManager.mentions)
     discord_handler.setFormatter(alertFormatter)
     discord_handler.setLevel(logging.WARNING)
     rootLogger.addHandler(discord_handler)
