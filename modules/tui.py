@@ -260,7 +260,7 @@ class TUI(Singleton):
             self.playlist.add_item_list(newPlaylist)
         totalLength = sum([s.duration for s in q])
         remainingLength = sum([s.duration for s in q if q.index(s) > idx])
-        self.playlist.set_title("Media Queue ({items}) Rem [{remain}] Tot [{total}]".format(
+        self.playlist.set_title("Media Queue ({items}) [{remain} / {total}]".format(
             items=len(q),
             remain=conversion.floatToHMS(remainingLength),
             total=conversion.floatToHMS(totalLength)
