@@ -1,4 +1,4 @@
-# WRPI AUTO
+# WRPI-auto
 
 ![TUI example](https://i.imgur.com/Ed6osFC.png)
 
