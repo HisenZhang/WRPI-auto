@@ -202,9 +202,33 @@ Besides above listed, root window always resides in the back.
 - Use arrow keys to navigate among widgets. The selected widget has broader highlighted.
 - Press `ENTER` to focus on the selected widget.
 
-**Each widget has its own key binds.** The key binds applies only when it's on focus. To select root window, defocus from any widget. 
+**Each widget has its own key binds.** The key binds applies only when it's on focus. To select root window, defocus from any widget.
+
+The following sections introduce each widget.
 
 ##### <a name='MediaQueue'></a>Media Queue
+
+```text
++-- Media Queue (5) [0:10:00 / 0:21:59] ----------+
+|   1. [0:08:16] lib\show\Bossa Antigua.mp3       |
+|   2. [0:03:44] lib\show\Let's Get Lost.m4a *    |
+|   3. [0:02:22] lib\show\My Funny Valentine.mp3  |
+|   4. [0:04:37] lib\show\O Gato.mp3              |
+|   5. [0:03:02] lib\show\Someone to Watch Over M |
+|                                                 |
++-------------------------------------------------+
+```
+Media Queue shows the current playlist. The widget title has the format:
+
+`Media Queue` (`Total items`) [`Remaining length` / `Total length`]
+
+Where in the example above, the total number of audio in queue is 5, and takes 21 minutes 59 seconds to play all of them. All time code has `H:MM:SS` format.
+
+The piece playing now (No. 2 *Let's get Lost*) has green highlights with star `*` in the end of line. `Remaining length` sums starting from the third piece to the end.
+
+Each item has the format:
+
+`Ordering number` [`Length`] `path-to-audio`
 
 ##### <a name='NowPlaying'></a>Now Playing
 
