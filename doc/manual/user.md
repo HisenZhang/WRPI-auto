@@ -266,6 +266,19 @@ A summary of system resources is listed here. Refresh interval is configuarble i
 
 ##### <a name='StationLog'></a>Station Log
 
+```text
++-- Station Log -----------------------------------------------------------+
+| 2021-06-25 00:15:07,659 - Daemon     [INFO] Scheduler started.           |
+| 2021-06-25 00:15:07,660 - TUI        [INFO] TUI starting...              |
+| 2021-06-25 00:15:10,504 - TUI        [INFO] Playing "lib\show\Bossa Anti |
+| 2021-06-25 00:15:24,362 - TUI        [INFO] Playing "lib\show\Let's Get  |
+| 2021-06-25 00:19:08,223 - TUI        [INFO] Playing "lib\show\My Funny V |
+| 2021-06-25 00:19:30,000 - Daemon     [INFO] Mixer digest: [show]  (100%) |
+| 2021-06-25 00:21:30,614 - TUI        [INFO] Playing "lib\show\O Gato.mp3 |
+|                                                                          |
++--------------------------------------------------------------------------+
+```
+
 This is a copy of log you will find in the log folder on the screen. Severity highlights use different colors, with following mapping:
 
 | Logging Level | Color   |
