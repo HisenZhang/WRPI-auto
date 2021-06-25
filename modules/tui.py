@@ -37,8 +37,7 @@ class TUI(Singleton):
         self.root.add_key_command(py_cui.keys.KEY_P_LOWER, self.mixer.pause)
         self.root.add_key_command(py_cui.keys.KEY_P_UPPER, self.mixer.unpause)
         self.root.add_key_command(py_cui.keys.KEY_H_LOWER, self.help)
-        self.root.add_key_command(py_cui.keys.KEY_H_UPPER, self.help)
-        self.root.add_key_command(py_cui.keys.KEY_Q_UPPER, self.quit)
+        self.root.add_key_command(py_cui.keys.KEY_CTRL_Q, self.quit)
         self.root.add_key_command(py_cui.keys.KEY_CTRL_UP, self.mixer.volumeUp)
         self.root.add_key_command(
             py_cui.keys.KEY_CTRL_DOWN, self.mixer.volumeDown)
