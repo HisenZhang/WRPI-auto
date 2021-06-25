@@ -1,12 +1,45 @@
-# User Manual
+---
+title: WRPI-auto User Manual
+author: Hisen Zhang
+header: ${title}  -  Exported on ${today}
+footer: Page ${pageNo} / ${pageCount}
+---
 
-This manual is for users. For more datails about this software please refer to programming manual in `doc/` folder.
+# WRPI-auto User Manual
 
-## Before starting
+This manual is for users. For more details about this software please refer to programming manual in `doc/` folder.
+
+**Table of Contents**
+
+<!-- vscode-markdown-toc -->
+* [Before starting](#Beforestarting)
+	* [Logging levels](#Logginglevels)
+* [Deployment](#Deployment)
+	* [Install Python Environment](#InstallPythonEnvironment)
+	* [Install Python Modules](#InstallPythonModules)
+	* [Acquire ffmpeg & ffprobe](#Acquireffmpegffprobe)
+	* [Configure Station](#ConfigureStation)
+	* [Import Media](#ImportMedia)
+	* [Directory Structure](#DirectoryStructure)
+* [Start](#Start)
+	* [Preparation](#Preparation)
+	* [Run](#Run)
+* [User Interface](#UserInterface)
+	* [TUI](#TUI)
+		* [Display](#Display)
+		* [Key binds](#Keybinds)
+
+<!-- vscode-markdown-toc-config
+	numbering=false
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+## <a name='Beforestarting'></a>Before starting
 
 Here are some important things to know before starting this software.
 
-### Logging levels: What do they mean?
+### <a name='Logginglevels'></a>Logging levels
 
 Severity increases down the list.
 
@@ -17,37 +50,38 @@ Severity increases down the list.
 - `ERROR` Program can't recover from the issue by itself, but may still proceed.
 - `CRITICAL` Unrecoverable issue. Program halts immediately.
 
-## Deployment
+## <a name='Deployment'></a>Deployment
 
-### Python Environment
+### <a name='InstallPythonEnvironment'></a>Install Python Environment
 
+Visit [www.python.org](https://www.python.org/) to download installer matching your system platform.
 Recommended Python version >= 3.8.10
 
-### Python Modules
+### <a name='InstallPythonModules'></a>Install Python Modules
 
-Windows:
+On Windows run the following script:
 
 ```bash
 pip install -r windows-requirements.txt
 ```
 
-Unix:
+or if using Unix:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### ffmpeg & ffprobe
+### <a name='Acquireffmpegffprobe'></a>Acquire ffmpeg & ffprobe
 
-`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builts are available. Version 4.3.1 was tested to work on 32-bit Windows.
+`ffmpeg` and `ffprobe` are used for media processing (i.e. loudness normalization) and metadata extraction. Recommended ffmpeg version 4.4, but for 32-bit Windows platform only some earlier version builds are available. Version 4.3.1 was tested to work on 32-bit Windows.
 
-Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled excutables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](#Directory-Structure) below. 
+Go [ffmpeg.org](http://ffmpeg.org/download.html) to download compiled executables (not source!) for the specific platform. Then copy them to `bin/`. **If such path doesn't exist, create one.** See example [directory structure](#Directory-Structure) below. 
 
-### Station Configuration
+### <a name='ConfigureStation'></a>Configure Station
 
-Create a copy from `doc/sample-config.py` to the side of `main.py` in the project base directory. Rename the copy to `config.py`. Then modify configs in `config.py` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the code.
+Create a copy from `doc/sample-config.yml` to the side of `main.py` in the project base directory. Rename this copy to `config.yml`. Then modify items in `config.yml` such as station name, audio loudness and quality, SMTP etc. Follow the comments in the file.
 
-### Import Media
+### <a name='ImportMedia'></a>Import Media
 
 All media used are stored in `lib/` under different category organized by folders. Here are some default ones:
 
@@ -56,9 +90,11 @@ All media used are stored in `lib/` under different category organized by folder
 - PSA
 - fill
 
-You are free to add more categories.
+Customization allows more categories, which is consigurable in the config file. Remember to create a folder of the same name under `lib/`.
 
-### Directory Structure
+<div style="page-break-after: always; break-after: page;"></div>
+
+### <a name='DirectoryStructure'></a>Directory Structure
 
 This is an example directory structure on Windows. Some files are ignored 
 
@@ -92,31 +128,34 @@ This is an example directory structure on Windows. Some files are ignored
 └─modules       // program modules
 ```
 
-## Start
+## <a name='Start'></a>Start
 
-### Preparation
+### <a name='Preparation'></a>Preparation
 
-- Set cart computer (this software runs on) system volume to 100%.
-- Set physical mixer channel (e.g. cart channel) to 100% (0dB)
+- Set cart computer (where this software runs on) system volume to 100%.
+- Set physical mixer channel (i.e. cart channel) to 100% (0dB)
 - Start the program. Refer to section [Run](#Run).
 
-### Run
+### <a name='Run'></a>Run
 
 This software runs in two modes:
 
-- Text User Interface (TUI)
-  - Default mode
-    - preferred if the hardware system has a terminal (i.e. monitor and keyboard) 
-  - Full user control
-    - Volume, mute, pause, etc.
-  - Use slightly more hardware resource than headless mode.
-- Headless mode
-  - For compromised hardware environment
-    - Raspberry Pi
-    - Servers
-  - Less hardware resource consumption.
+**Text User Interface (TUI)**
 
-To start:
+- Default mode
+  - preferred if the hardware system has a terminal (i.e. monitor and keyboard) 
+- Full user control
+  - Volume, mute, pause, etc.
+- Use slightly more hardware resource than headless mode.
+
+**Headless mode**
+
+- For compromised hardware environment
+  - Raspberry Pi
+  - Servers
+- Less hardware resource consumption.
+
+To start with TUI:
 
 ```bash
 python main.py
@@ -129,8 +168,66 @@ python main.py --headless
 
 Use flag `-h` for help.
 
-## Control
+## <a name='UserInterface'></a>User Interface
 
-### TUI
+User control is all accomplished in Text User Interface, also known as TUI.
 
-                
+### <a name='TUI'></a>TUI
+
+TUI stands for Text User Interface. TUI has two core functions:
+
+- Display important information, such as
+  - Media queue
+  - Logging
+  - System statistics
+- Accepts user input through key binds, for
+  - Play control
+
+Below is a screenshot of TUI.
+
+![TUI example](https://i.imgur.com/Ed6osFC.png)
+
+#### <a name='Display'></a>Display
+
+The entire screen splits into four widgets:
+
+- Media Queue
+- Now Playing
+- System Statistics
+- Station Log
+
+Besides above listed, root window always resides in the back.
+
+- Press `ESC` to defocus from any widget. 
+- Use arrow keys to navigate among widgets. The selected widget has broader highlighted.
+- Press `ENTER` to focus on the selected widget.
+
+**Each widget has its own key binds.** The key binds applies only when it's on focus. To select root window, defocus from any widget. 
+
+##### <a name='MediaQueue'></a>Media Queue
+
+##### <a name='NowPlaying'></a>Now Playing
+
+##### <a name='SystemStatistics'></a>System Statistics
+
+Summary of system resources is listed here.
+
+##### <a name='StationLog'></a>Station Log
+
+This is a copy of log you will find in the log folder on the screen. Severity highlights use different colors, with following mapping:
+
+| Logging Level | Color   |
+|---------------|---------|
+| DEBUG         | Blue    |
+| INFO          | Green   |
+| WARNING       | Yellow  |
+| ERROR         | Red     |
+| CRITICAL      | Magenta |
+
+For persistent log files, checkout `log/`.
+
+#### <a name='Keybinds'></a>Key binds
+
+Remember, **Each widget has its own key binds.** For example, key binds in Media Queue is different from that in Station Log, nor it extends root window's.
+
+Here's a reference sheet for all key binds:
