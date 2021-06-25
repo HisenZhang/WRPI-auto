@@ -90,7 +90,7 @@ All media used are stored in `lib/` under different category organized by folder
 - PSA
 - fill
 
-Customization allows more categories, which is consigurable in the config file. Remember to create a folder of the same name under `lib/`.
+Customization allows more categories, which is configurable in the config file. Remember to create a folder of the same name under `lib/`.
 
 <div style="page-break-after: always; break-after: page;"></div>
 
@@ -257,9 +257,9 @@ A summary of mixer status. Each line represents a channel, having format:
 +-------------------------------------------------+
 ```
 
-A summary of system resources is listed here. Refresh interval is configuarble in `schedule` section.
+A summary of system resources is listed here. Refresh interval is configurable in `schedule` section.
 
-- `CPU` Centural processing unit load.
+- `CPU` Central processing unit load.
 - `RAM` System virtual memory usage. The total includes physical and swap space.
 - `STR` Disk usage of the partition that this software runs on.
 - `PWR` System power supply. If system is battery powered and plugged into AC outlet, the line will indicate `CHARGING`.
@@ -317,12 +317,12 @@ Play control:
 - `m` Mute
 - `M` Unmute
 - `p` Pause
-- `P` Resume / Unpause
+- `P` Resume (un**P**ause)
 - `n` Play next
 - `ctrl+UP` Volume up 10%
 - `ctrl+DOWN` Volume down 10% (temporarily)
 
-Misc.:
+Miscellaneous:
 
 - `ctrl+Q` quit this software
 - `h` help screen
