@@ -5,9 +5,9 @@ header: ${title}  -  Exported on ${today}
 footer: Page ${pageNo} / ${pageCount}
 ---
 
-# WRPI-auto User Manual
+# User Manual
 
-This manual is for users. For more details about this software please refer to programming manual in `doc/` folder.
+This manual is for user reference. For more details about this software, please refer to programming manual in `doc/` folder.
 
 **Table of Contents**
 
