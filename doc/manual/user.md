@@ -46,8 +46,9 @@ Severity increases down the list.
 - `DEBUG` Very detailed level of output for program debugging & diagnostic purpose.
 - `INFO` Regular information for station logs. **Default level of output.**
 - `WARNING` Program foresees a issue may result in abnormality. 
-  - Will trigger **email alert** and **need manual intervention** on (and beyond) this level.
+  - Will trigger **Discord alert** and **need manual intervention** on (and beyond) this level.
 - `ERROR` Program can't recover from the issue by itself, but may still proceed.
+  - Will trigger **email alert**
 - `CRITICAL` Unrecoverable issue. Program halts immediately.
 
 ## <a name='Deployment'></a>Deployment

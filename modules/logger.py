@@ -195,7 +195,7 @@ if smtp_configManager.enable:
                                                smtp_configManager.password),
                                   )
     smtp_handler.setFormatter(alertFormatter)
-    smtp_handler.setLevel(logging.WARNING)
+    smtp_handler.setLevel(logging.ERROR)
     rootLogger.addHandler(smtp_handler)
 
 discord_configManager = configManager.cfg.alert.discord
