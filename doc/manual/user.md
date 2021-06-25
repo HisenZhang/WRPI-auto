@@ -247,7 +247,22 @@ A summary of mixer status. Each line represents a channel, having format:
 
 ##### <a name='SystemStatistics'></a>System Statistics
 
-Summary of system resources is listed here.
+```text
++-- System Statitics -----------------------------+
+| [ CPU ] (  6%)                                  |
+| [ RAM ] ( 81%) free:    1.5 GiB total:    8.0 G |
+| [ STR ] ( 38%) free:  318.9 GiB total:  512.0 G |
+| [ PWR ] (100%)                                  |
+|                                                 |
++-------------------------------------------------+
+```
+
+A summary of system resources is listed here. Refresh interval is configuarble in `schedule` section.
+
+- `CPU` Centural processing unit load.
+- `RAM` System virtual memory usage. The total includes physical and swap space.
+- `STR` Disk usage of the partition that this software runs on.
+- `PWR` System power supply. If system is battery powered and plugged into AC outlet, the line will indicate `CHARGING`.
 
 ##### <a name='StationLog'></a>Station Log
 
