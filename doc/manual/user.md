@@ -295,4 +295,55 @@ For persistent log files, checkout `log/`.
 
 Remember, **Each widget has its own key binds.** For example, key binds in Media Queue is different from that in Station Log, nor it extends root window's.
 
-Here's a reference sheet for all key binds:
+**Key binds are case sensitive.**
+
+Here's a reference sheet for all key binds (mnemonic in parentheses):
+
+##### <a name='Global'></a>Global
+
+- `ESC` defocus from the current widget
+
+##### <a name='RootWindow'></a>Root Window
+
+Switch focus:
+
+- `q` focus on Widget `Media Queue`
+- `l` focus on Widget `Station Log`
+- `r` focus on Widget `System Statistics` (system **r**esources)
+
+Play control:
+
+- `i` Play station ID immediately
+- `m` Mute
+- `M` Unmute
+- `p` Pause
+- `P` Resume / Unpause
+- `n` Play next
+- `ctrl+UP` Volume up 10%
+- `ctrl+DOWN` Volume down 10% (temporarily)
+
+Misc.:
+
+- `ctrl+Q` quit this software
+- `h` help screen
+
+##### <a name='MediaQueue'></a>Media Queue
+
+- `UP` Select previous item
+- `DOWN` Select next item
+- `PAGE UP`	Move selected item up
+- `PAGE DOWN` Move selected item down
+- `HOME` Move selected item to the top of queue
+- `END` Move selected item to the end of queue
+
+##### <a name='NowPlaying'></a>Now Playing
+
+< empty >
+
+##### <a name='SystemStatistics'></a>System Statistics
+
+< empty >
+
+##### <a name='StationLog'></a>Station Log
+
+< empty >
