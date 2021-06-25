@@ -232,6 +232,19 @@ Each item has the format:
 
 ##### <a name='NowPlaying'></a>Now Playing
 
+```text
++-- Now Playing ----------------------------------+
+| [ show ] (100%) lib\show\Let's Get Lost.m4a     |
+| [ fill ] (100%) <empty>                         |
+| [ PSA  ] (100%) <empty>                         |
+|                                                 |
++-------------------------------------------------+
+```
+
+A summary of mixer status. Each line represents a channel, having format:
+
+[`channel`] (`volume`) `path-to-audio`
+
 ##### <a name='SystemStatistics'></a>System Statistics
 
 Summary of system resources is listed here.
