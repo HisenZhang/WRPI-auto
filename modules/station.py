@@ -11,7 +11,7 @@ import schedule
 from .util import configManager, fsUtil, db
 
 
-class control:
+class manager:
     def __init__(self) -> None:
         self.mixer = audio.virtualMixerWrapper()
         self.playControl = play.control(self.mixer)
@@ -70,7 +70,6 @@ class control:
         logging.info("All sounds in lib normalized.")
         self.ID()
         self.lastSignIn = time.time()
-        return self.mixer
 
     def loudNorm(self, targets: list = None):
         procs = []

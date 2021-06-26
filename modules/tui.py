@@ -21,8 +21,8 @@ class TUIHandler(logging.Handler):
 
 class TUI(Singleton):
     def __init__(self, root: py_cui.PyCUI) -> None:
-        self.station = station.control()
-        self.mixer = self.station.signIn()
+        self.station = station.manager()
+        self.station.signIn()
         self.station.systemMonitor()
 
         self.station.scheduleInit()
@@ -233,7 +233,7 @@ class TUI(Singleton):
         self.root.set_title(
             '{} {} Broadcast Automation System {}'.format(statusString, configManager.cfg.station.name, t.strftime("%b-%d-%Y %H:%M:%S")))
 
-        self.mixer.get_volume()
+        self.station.mixer.get_volume()
         mixerDigest = []
         for chan, sound in self.mixer.channelLastPlayed.items():
             if chan == 'stationID' or chan is None:

@@ -36,7 +36,7 @@ import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
 from modules import logger  # MUST BE IMPORTED BEFORE ANY OTHER LOGGING MODULES
-from modules.station import control
+from modules.station import manager
 
 # Defining station behavior
 
@@ -46,7 +46,7 @@ def routine():
     """
     try:
         # At startup
-        station = control()
+        station = manager()
         station.signIn()
 
         # Register schedule
