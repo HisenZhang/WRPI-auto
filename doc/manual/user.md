@@ -389,6 +389,7 @@ A higher value indicates insufficiency in system memory space. The memory space 
 Possible consequence:
 
 - Bad (choppy and laggy) audio decoding & playing.
+- Software malfunctioning.
 
 Solution:
 
