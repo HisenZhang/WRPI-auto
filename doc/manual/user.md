@@ -1,13 +1,13 @@
 ---
-title: WRPI-auto User Manual
-author: Hisen Zhang
-header: ${title}  -  Exported on ${today}
+title: "User Manual"
+author: "Hisen Zhang"
+header: ${title}  -  Exported ${today}
 footer: Page ${pageNo} / ${pageCount}
 ---
 
 # User Manual
 
-This manual is for user reference. For more details about this software, please refer to programming manual in `doc/` folder.
+This WRPI Broadcast Automation System manual is for user reference. For more details about this software, please refer to programming manual in `doc/` folder.
 
 **Table of Contents**
 
@@ -25,9 +25,23 @@ This manual is for user reference. For more details about this software, please 
 	* [Preparation](#Preparation)
 	* [Run](#Run)
 * [User Interface](#UserInterface)
-	* [TUI](#TUI)
-		* [Display](#Display)
-		* [Key binds](#Keybinds)
+	* [Display](#Display)
+		* [Media Queue](#MediaQueue)
+		* [Now Playing](#NowPlaying)
+		* [System Statistics](#SystemStatistics)
+		* [Station Log](#StationLog)
+	* [Key binds](#Keybinds)
+		* [Global](#Global)
+		* [Root Window](#RootWindow)
+		* [Media Queue](#MediaQueue-1)
+		* [Now Playing](#NowPlaying-1)
+		* [System Statistics](#SystemStatistics-1)
+		* [Station Log](#StationLog-1)
+* [Common Issues](#CommonIssues)
+	* [System Resources](#SystemResources)
+		* [CPU](#CPU)
+		* [RAM](#RAM)
+		* [Storage](#Storage)
 
 <!-- vscode-markdown-toc-config
 	numbering=false
@@ -171,11 +185,7 @@ Use flag `-h` for help.
 
 ## <a name='UserInterface'></a>User Interface
 
-User control is all accomplished in Text User Interface, also known as TUI.
-
-### <a name='TUI'></a>TUI
-
-TUI stands for Text User Interface. TUI has two core functions:
+User control is all accomplished in Text User Interface, also known as TUI. TUI has two core functions:
 
 - Display important information, such as
   - Media queue
@@ -188,7 +198,7 @@ Below is a screenshot of TUI.
 
 ![TUI example](https://i.imgur.com/Ed6osFC.png)
 
-#### <a name='Display'></a>Display
+### <a name='Display'></a>Display
 
 The entire screen splits into four widgets:
 
@@ -207,7 +217,7 @@ Besides above listed, root window always resides in the back.
 
 The following sections introduce each widget.
 
-##### <a name='MediaQueue'></a>Media Queue
+#### <a name='MediaQueue'></a>Media Queue
 
 ```text
 +-- Media Queue (5) [0:10:00 / 0:21:59] ----------+
@@ -223,7 +233,7 @@ Media Queue shows the current playlist. The widget title has the format:
 
 `Media Queue` (`Total items`) [`Remaining length` / `Total length`]
 
-Where in the example above, the total number of audio in queue is 5, and takes 21 minutes 59 seconds to play all of them. All time code has `H:MM:SS` format.
+Where in the example above, the total number of audio in queue is 5, and takes 21 minutes 59 seconds to play all of them. All time code has H:MM:SS format.
 
 The piece playing now (No. 2 *Let's get Lost*) has green highlights with star `*` in the end of line. `Remaining length` sums starting from the third piece to the end.
 
@@ -231,7 +241,7 @@ Each item has the format:
 
 `Ordering number` [`Length`] `path-to-audio`
 
-##### <a name='NowPlaying'></a>Now Playing
+#### <a name='NowPlaying'></a>Now Playing
 
 ```text
 +-- Now Playing ----------------------------------+
@@ -246,7 +256,7 @@ A summary of mixer status. Each line represents a channel, having format:
 
 [`channel`] (`volume`) `path-to-audio`
 
-##### <a name='SystemStatistics'></a>System Statistics
+#### <a name='SystemStatistics'></a>System Statistics
 
 ```text
 +-- System Statitics -----------------------------+
@@ -265,7 +275,7 @@ A summary of system resources is listed here. Refresh interval is configurable i
 - `STR` Disk usage of the partition that this software runs on.
 - `PWR` System power supply. If system is battery powered and plugged into AC outlet, the line will indicate `CHARGING`.
 
-##### <a name='StationLog'></a>Station Log
+#### <a name='StationLog'></a>Station Log
 
 ```text
 +-- Station Log -----------------------------------------------------------+
@@ -292,7 +302,7 @@ This is a copy of log you will find in the log folder on the screen. Severity hi
 
 For persistent log files, checkout `log/`.
 
-#### <a name='Keybinds'></a>Key binds
+### <a name='Keybinds'></a>Key binds
 
 Remember, **Each widget has its own key binds.** For example, key binds in Media Queue is different from that in Station Log, nor it extends root window's.
 
@@ -300,11 +310,11 @@ Remember, **Each widget has its own key binds.** For example, key binds in Media
 
 Here's a reference sheet for all key binds (mnemonic in parentheses):
 
-##### <a name='Global'></a>Global
+#### <a name='Global'></a>Global
 
 - `ESC` defocus from the current widget
 
-##### <a name='RootWindow'></a>Root Window
+#### <a name='RootWindow'></a>Root Window
 
 Switch focus:
 
@@ -328,7 +338,7 @@ Miscellaneous:
 - `ctrl+Q` quit this software
 - `h` help screen
 
-##### <a name='MediaQueue'></a>Media Queue
+#### <a name='MediaQueue-1'></a>Media Queue
 
 - `UP` Select previous item
 - `DOWN` Select next item
@@ -337,15 +347,15 @@ Miscellaneous:
 - `HOME` Move selected item to the top of queue
 - `END` Move selected item to the end of queue
 
-##### <a name='NowPlaying'></a>Now Playing
+#### <a name='NowPlaying-1'></a>Now Playing
 
 < empty >
 
-##### <a name='SystemStatistics'></a>System Statistics
+#### <a name='SystemStatistics-1'></a>System Statistics
 
 < empty >
 
-##### <a name='StationLog'></a>Station Log
+#### <a name='StationLog-1'></a>Station Log
 
 < empty >
 
