@@ -29,7 +29,7 @@ class Singleton(object):
         pass
 
 
-class config(Singleton):
+class configProxy(Singleton):
     # https://martin-thoma.com/configuration-files-in-python/
     def __init__(self) -> None:
         self.cfg = None
@@ -51,7 +51,7 @@ class config(Singleton):
             logging.error('Config hot reload error: ' + str(e))
 
 
-configManager = config()
+configManager = configProxy()
 
 
 class db(Singleton):
