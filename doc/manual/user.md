@@ -348,3 +348,57 @@ Miscellaneous:
 ##### <a name='StationLog'></a>Station Log
 
 < empty >
+
+## <a name='CommonIssues'></a>Common Issues
+
+This section discuss common issues and how to fix them. Common issues covers most of warning and some light errors. Contact software support if the issue is not listed below.
+
+### <a name='SystemResources'></a>System Resources 
+
+Typical warnings include high load / system resources depletion.
+
+#### <a name='CPU'></a>CPU 
+
+A higher value indicates insufficiency in system computational resource.
+
+Possible consequence:
+
+- Bad (choppy and laggy) audio decoding & playing.
+
+Solution:
+
+- Use task manager or equivalent to inspect processes;
+- Identify irrelevant software running in the background, if any;
+- Kill those processes. 
+- If this problem continues for an extended period time, consider upgrade system hardware with a more powerful CPU.
+
+#### <a name='RAM'></a>RAM
+
+A higher value indicates insufficiency in system memory space. The memory space include physical memory and virtual one (swap partition on Unix; page file on Windows).
+
+Possible consequence:
+
+- Bad (choppy and laggy) audio decoding & playing.
+
+Solution:
+
+- Use task manager or equivalent to inspect processes;
+- Identify irrelevant software running in the background, if any;
+- Kill those processes.
+- If this problem continues for an extended period time, consider upgrade system hardware with more RAM space.
+
+
+#### <a name='Storage'></a>Storage
+
+A higher value indicates insufficiency in storage space in the partition that this software runs on.
+
+Possible consequence:
+
+- Fail to log;
+- Fail to write to database.
+
+Solution:
+
+- Free some space by deleting files;
+- Or, move this software and media library to another partition.
+- If this problem continues for an extended period time, consider upgrade system hardware with more RAM space.
