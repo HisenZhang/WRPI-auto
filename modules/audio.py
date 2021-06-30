@@ -164,14 +164,14 @@ class virtualMixerWrapper(Singleton):
             self.paused = True
             logging.warning("All channels paused.")
 
-    def unpause(self):
+    def resume(self):
         with self.lock:
             if self.paused == False:
                 return
             for _, chan in self.channelMap.items():
-                chan.unpause()
+                chan.resume()
             self.paused = False
-            logging.warning("All channels unpaused.")
+            logging.warning("All channels resumed.")
 
     def fadeout(self, length):
         self.mixer.fadeout(length)

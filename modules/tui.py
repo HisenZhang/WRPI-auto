@@ -32,15 +32,20 @@ class TUI(Singleton):
 
         self.root.add_key_command(py_cui.keys.KEY_I_LOWER, self.station.ID)
         self.root.add_key_command(py_cui.keys.KEY_N_LOWER, self.playNext)
-        self.root.add_key_command(py_cui.keys.KEY_M_LOWER, self.mixer.mute)
-        self.root.add_key_command(py_cui.keys.KEY_M_UPPER, self.mixer.unmute)
-        self.root.add_key_command(py_cui.keys.KEY_P_LOWER, self.mixer.pause)
-        self.root.add_key_command(py_cui.keys.KEY_P_UPPER, self.mixer.unpause)
+        self.root.add_key_command(
+            py_cui.keys.KEY_M_LOWER, self.station.mixer.mute)
+        self.root.add_key_command(
+            py_cui.keys.KEY_M_UPPER, self.station.mixer.unmute)
+        self.root.add_key_command(
+            py_cui.keys.KEY_P_LOWER, self.station.mixer.pause)
+        self.root.add_key_command(
+            py_cui.keys.KEY_P_UPPER, self.station.mixer.resume)
         self.root.add_key_command(py_cui.keys.KEY_H_LOWER, self.help)
         self.root.add_key_command(py_cui.keys.KEY_CTRL_Q, self.quit)
-        self.root.add_key_command(py_cui.keys.KEY_CTRL_UP, self.mixer.volumeUp)
         self.root.add_key_command(
-            py_cui.keys.KEY_CTRL_DOWN, self.mixer.volumeDown)
+            py_cui.keys.KEY_CTRL_UP, self.station.mixer.volumeUp)
+        self.root.add_key_command(
+            py_cui.keys.KEY_CTRL_DOWN, self.station.mixer.volumeDown)
 
         self.root.set_status_bar_text(
             "[M]ute [P]ause [CTRL]+[UP/DN]Volume [H]elp [Q]uit - Use arrow keys to navigate. ENTER to focus.")
@@ -224,9 +229,9 @@ class TUI(Singleton):
         self.station.playControl.play('show')
 
         status = []
-        if self.mixer.muted:
+        if self.station.mixer.muted:
             status.append("[MUTED]")
-        if self.mixer.paused:
+        if self.station.mixer.paused:
             status.append("[PAUSED]")
         statusString = ' '.join(status)
         t = datetime.now()
@@ -235,11 +240,11 @@ class TUI(Singleton):
 
         self.station.mixer.get_volume()
         mixerDigest = []
-        for chan, sound in self.mixer.channelLastPlayed.items():
+        for chan, sound in self.station.mixer.channelLastPlayed.items():
             if chan == 'stationID' or chan is None:
                 continue
             mixerDigest.append("[{chan:^6}] ({vol:>3}%) {sound}".format(
-                chan=chan, vol=int(self.mixer.vol[chan]*100), sound=sound.path if sound else '<empty>'))
+                chan=chan, vol=int(self.station.mixer.vol[chan]*100), sound=sound.path if sound else '<empty>'))
         oldDigest = self.mixerStatus.get_item_list()
         if oldDigest != mixerDigest:
             self.mixerStatus.clear()
