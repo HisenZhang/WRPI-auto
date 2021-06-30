@@ -169,7 +169,7 @@ class virtualMixerWrapper(Singleton):
             if self.paused == False:
                 return
             for _, chan in self.channelMap.items():
-                chan.resume()
+                chan.unpause()
             self.paused = False
             logging.warning("All channels resumed.")
 
