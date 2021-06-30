@@ -154,3 +154,6 @@ db.json
 
 # config
 config.yml
+
+# test asset
+test/asset
