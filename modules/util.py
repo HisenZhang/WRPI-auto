@@ -212,7 +212,16 @@ class fsUtil:
 
 class conversion:
     def floatToHMS(f: float):
-        return str(datetime.timedelta(seconds=ceil(f)))
+        if f < 0:
+            raise ValueError("Duration must be non-negative")
+
+        fmt = "{hours:0>1}:{minutes:0>2}:{seconds:0>2}"
+        tdelta = datetime.timedelta(seconds=ceil(f))
+        d = {}
+        d["hours"], rem = divmod(tdelta.seconds, 3600)
+        d["hours"] += tdelta.days * 24
+        d["minutes"], d["seconds"] = divmod(rem, 60)
+        return fmt.format(**d)
 
 
 class ffmpegWrapper:
