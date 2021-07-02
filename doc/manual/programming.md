@@ -2,7 +2,104 @@
 
 This manual is for programmers reference. For usage/operation, please refer to user manual in `doc/` folder.
 
-## General Design Goals
+**Table of Contents**
+
+<!-- vscode-markdown-toc -->
+* [General Design Goals](#GeneralDesignGoals)
+* [Developing Environment](#DevelopingEnvironment)
+	* [Python](#Python)
+	* [Module Dependencies](#ModuleDependencies)
+	* [Tools](#Tools)
+		* [IDE](#IDE)
+		* [Doc Rendering](#DocRendering)
+* [Code Structure](#CodeStructure)
+* [Core Classes](#CoreClasses)
+* [Doc Writing](#DocWriting)
+	* [User Manual](#UserManual)
+	* [Programming Manual](#ProgrammingManual)
+* [Unit Test](#UnitTest)
+
+<!-- vscode-markdown-toc-config
+	numbering=false
+	autoSave=true
+	/vscode-markdown-toc-config -->
+<!-- /vscode-markdown-toc -->
+
+## <a name='GeneralDesignGoals'></a>General Design Goals
+
+1. High service availability
+    - Audio service shall never stop unless intended
+2. Low hardware requirement
+    - Use as less hardware resource as possible
+3. High accessibility
+    - Available across platforms
+    - Ease of use
+
+## <a name='DevelopingEnvironment'></a>Developing Environment
+
+This software is written mainly in Python 3. Some functions were implemented by calling external binaries, namely ffmpeg.
+
+### <a name='Python'></a>Python
+
+The prototype was developed under Python version 3.8.10
+
+### <a name='ModuleDependencies'></a>Module Dependencies
+
+Python module dependencies are listed in `requirements.txt`. Note that TUI is based on ncurses, which is only available on Unix; thus on Windows there are extra modules to include. Checkout `windows-requirements.txt`.
+
+### <a name='Tools'></a>Tools
+
+#### <a name='IDE'></a>IDE
+
+It is recommended to use Visual Studio Code as IDE for this software. Some handy extensions are listed below:
+
+#### <a name='DocRendering'></a>Doc Rendering
+
+Docs are written in markdown. To generate PDF, use Typora. Here's the [website](https://typora.io/).
+
+## <a name='CodeStructure'></a>Code Structure
+
+## <a name='CoreClasses'></a>Core Classes
+
+## <a name='DocWriting'></a>Doc Writing
+
+### <a name='UserManual'></a>User Manual
+
+User manual aims at general audience without non-technical background. It should be available for both online access and physical access - that says, keep a printed copy in studio as well.
+
+To generate printable PDF, use Typora with customized stylesheet. The customized stylesheet is based on builtin theme `pixyll` with a few improvement:
+
+- border for \<code> tags
+- paper size changed to US letter (you may need to adjust this per your locale)
+- page break before secondary headings
+
+To apply those customization, copy `doc/manual/pixyll.user.css` to Typora theme folder. Restart Typora and now this stylesheet applies.
+
+### <a name='ProgrammingManual'></a>Programming Manual
+
+The manual 
+
+## <a name='UnitTest'></a>Unit Test
+
+This software use Python's standard unittest framework.
+
+Each class should have a independent test file named `test_*.py`, include a test case named `Test[ClassName]`. Each test has function name `test_*`.
+
+Take `util.conversion` as an example:
+
+```python
+# filename: test_conversion.py
+import unittest
+from modules.util import conversion
+
+
+class TestFloatToHMS(unittest.TestCase):
+
+    def setUp(self):
+        self.secondsPerDay = 86400
+
+    def test_zero(self):
+        assert conversion.floatToHMS(0.0) == "0:00:00"
 
 - Reliability
 
