@@ -1,0 +1,64 @@
+/* Override code block; add border and horizontal padding */
+code {
+    border-radius: 0.2em;
+    padding: 0 0.2em;
+    border: 1px solid #7a7a7a;
+}
+
+/* Color links in blue */
+a {
+    color: rgb(0, 0, 204);
+}
+
+@media print {
+    html {
+        font-size: 12px!important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    body.typora-export {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .typora-export #write {
+        padding: 0 !important;
+        margin-top: -2mm !important;
+        margin-right: 0mm !important;
+        margin-bottom: -2mm !important;
+        margin-left: 0mm !important;
+    }
+}
+
+@media print, (overflow-block: paged)
+{
+  /* Move top-level headings to a new page on the right-hand side: */
+  h2
+  {
+    page-break-before: right; /* CSS 2 */
+    break-before: recto;      /* CSS 3+, 
+      also works for languages written and paginated right-to-left */
+  }
+  /* Override the previous ruleset for the very first heading: */
+  h1:first-of-type,
+  section > h1:first-child
+  {
+    page-break-before: avoid; /* CSS 2 */
+    break-before: avoid;      /* CSS 3+ */
+  }
+  /* Force second-level headings to begin in a new column or
+     possiblyon a new page if it was in the last of multiple columns otherwise: */
+  h3
+  {
+    break-before: column;
+  }
+  /* Headings should not be the last paragraph on a page: */
+  h1, h2, h3, h4, h5, h6
+  {
+    page-break-after: avoid;
+  }
+  /* Consecutive headings with deepening level should not be split across pages: */
+  h1+h2, h2+h3, h3+h4, h4+h5, h5+h6
+  {
+    page-break-before: avoid;
+  }
+}
