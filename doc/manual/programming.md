@@ -85,7 +85,9 @@ To apply those customization, copy `doc/manual/pixyll.user.css` to Typora theme 
 
 ### <a name='ProgrammingManual'></a>Programming Manual
 
-The manual 
+The manual you are reading right now is written for technician; Programming manual includes program design rules, code organization, and miscellaneous information for maintenance.
+
+Code specific comments comes within the code base.
 
 ## <a name='UnitTest'></a>Unit Test
 
