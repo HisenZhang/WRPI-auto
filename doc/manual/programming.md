@@ -69,7 +69,7 @@ This software adopted Model-View-Controller structure:
 2. View: TUI (optional, may run in headless mode)
 3. Controller: Station manager
 
-TUI displays status and forwards key binds input from user, then the command applies via station manager, and finally results in audio play control.
+TUI displays status and forwards key binds input commands from user, then these commands apply via station manager, and finally results in audio play control.
 
 ## <a name='CoreClasses'></a>Core Classes
 
