@@ -59,6 +59,14 @@ Docs are written in markdown. To generate PDF, use Typora. Here's the [website](
 
 ## <a name='CodeStructure'></a>Code Structure
 
+This software adopted Model-View-Controller structure:
+
+1. Model: Play control
+2. View: TUI (optional, may run in headless mode)
+3. Controller: Station manager
+
+TUI displays status and forwards key binds input from user, then the command applies via station manager, and finally results in audio play control.
+
 ## <a name='CoreClasses'></a>Core Classes
 
 ## <a name='DocWriting'></a>Doc Writing
