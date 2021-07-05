@@ -49,6 +49,10 @@ Python module dependencies are listed in `requirements.txt`. Note that TUI is ba
 
 ### <a name='Tools'></a>Tools
 
+#### Code Browser
+
+Use SourceTrail to visualize call/use graph to better understand how modules interact with each other.
+
 #### <a name='IDE'></a>IDE
 
 It is recommended to use Visual Studio Code as IDE for this software. Some handy extensions are listed below:
