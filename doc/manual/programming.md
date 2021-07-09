@@ -71,7 +71,35 @@ This software adopted Model-View-Controller structure:
 
 TUI displays status and forwards key binds input commands from user, then these commands apply via station manager, and finally results in audio play control.
 
-## <a name='CoreClasses'></a>Core Classes
+## <a name='CoreClasses'></a>Core Classes/Modules
+
+### Manager
+
+The public interface to access the station business, such as audio & play control. It extends Control object via composition.
+
+### Control
+
+Control implements play control such as pause/resume/stop, and manage a queue inside.
+
+### VirtualMixerWrapper
+
+A wrapper for `pygame.mixer` to manage multi channels.
+
+### Sound
+
+Sound object wraps `pygame.sound` to support lazy load and includes related utility interface, which are implemented in Util.
+
+### Effect
+
+Audio effect such as fade in & out.
+
+### Util
+
+Utility module is a collection of common services shared among other classes. Contains file system tools, database connection, ffmpeg wrappers.
+
+### TUI
+
+User Interface accessing Manager.
 
 ## <a name='DocWriting'></a>Doc Writing
 
