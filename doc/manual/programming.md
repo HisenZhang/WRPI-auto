@@ -10,10 +10,18 @@ This manual is for programmers reference. For usage/operation, please refer to u
 	* [Python](#Python)
 	* [Module Dependencies](#ModuleDependencies)
 	* [Tools](#Tools)
+		* [Code Browser](#CodeBrowser)
 		* [IDE](#IDE)
 		* [Doc Rendering](#DocRendering)
 * [Code Structure](#CodeStructure)
-* [Core Classes](#CoreClasses)
+* [Core Classes/Modules](#CoreClassesModules)
+	* [Manager](#Manager)
+	* [Control](#Control)
+	* [VirtualMixerWrapper](#VirtualMixerWrapper)
+	* [Sound](#Sound)
+	* [Effect](#Effect)
+	* [Util](#Util)
+	* [TUI](#TUI)
 * [Doc Writing](#DocWriting)
 	* [User Manual](#UserManual)
 	* [Programming Manual](#ProgrammingManual)
@@ -49,7 +57,7 @@ Python module dependencies are listed in `requirements.txt`. Note that TUI is ba
 
 ### <a name='Tools'></a>Tools
 
-#### Code Browser
+#### <a name='CodeBrowser'></a>Code Browser
 
 Use SourceTrail to visualize call/use graph to better understand how modules interact with each other.
 
@@ -71,33 +79,33 @@ This software adopted Model-View-Controller structure:
 
 TUI displays status and forwards key binds input commands from user, then these commands apply via station manager, and finally results in audio play control.
 
-## <a name='CoreClasses'></a>Core Classes/Modules
+## <a name='CoreClassesModules'></a>Core Classes/Modules
 
-### Manager
+### <a name='Manager'></a>Manager
 
 The public interface to access the station business, such as audio & play control. It extends Control object via composition.
 
-### Control
+### <a name='Control'></a>Control
 
 Control implements play control such as pause/resume/stop, and manage a queue inside.
 
-### VirtualMixerWrapper
+### <a name='VirtualMixerWrapper'></a>VirtualMixerWrapper
 
 A wrapper for `pygame.mixer` to manage multi channels.
 
-### Sound
+### <a name='Sound'></a>Sound
 
 Sound object wraps `pygame.sound` to support lazy load and includes related utility interface, which are implemented in Util.
 
-### Effect
+### <a name='Effect'></a>Effect
 
 Audio effect such as fade in & out.
 
-### Util
+### <a name='Util'></a>Util
 
 Utility module is a collection of common services shared among other classes. Contains file system tools, database connection, ffmpeg wrappers.
 
-### TUI
+### <a name='TUI'></a>TUI
 
 User Interface accessing Manager.
 
