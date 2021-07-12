@@ -12,6 +12,8 @@ from .util import configManager, fsUtil
 
 
 class control:
+    """Play controls. Keep multi-channel info & control for internal virtual mixer.
+    """
     def __init__(self, m: virtualMixerWrapper) -> None:
         self.mixer = m.mixer
         self.mixerLock = m.lock
@@ -58,16 +60,39 @@ class control:
             logging.error("Empty playlist. Not playing.")
 
     def _discoverSound(self, t: str):
+        """Discover audio files and generate sound objects
+
+        Args:
+            t (str): audio type
+
+        Returns:
+            list: a list of sound files
+        """
         return [sound(f) for f in fsUtil.list_sound(t)]
 
     def setMode(self, m: str):
+        """Set mode in one of four supported
+
+        Args:
+            m (str): playmode, one of ('loop', 'shuffle', 'single', 'once')
+        """
         assert m in ('loop', 'shuffle', 'single', 'once')
         self.mode = m
 
     def pullPlayList(self, t: str):
+        """Add discovered sounds to play queue
+
+        Args:
+            t (str): audio type
+        """
         self.queue.extend(self._discoverSound(t))
 
     def play(self, t: str):
+        """Play control, called every once in a while
+
+        Args:
+            t (str): audio type
+        """
         if len(self.queue) == 0:
             self.pullPlayList(t)
             self.index = -1
@@ -99,6 +124,11 @@ class control:
         pass
 
     def preloadNextSound(self, lookahead=1):
+        """Preload next N sounds
+
+        Args:
+            lookahead (int, optional): N sounds to be loaded. Defaults to 1.
+        """
         idx = self.index
         for _ in range(lookahead):
             i = (idx+1) % len(self.queue)
@@ -106,23 +136,41 @@ class control:
             idx += 1
 
     def next(self):
+        """Jump to next piece
+        """
         # TODO multichannel playlist
         self.mixer.fadeout(configManager.cfg.audio.transition_length)
 
     def appendPlayList(self, t: str = 'show'):
+        """Append to play queue
+
+        Args:
+            t (str, optional): audio type. Defaults to 'show'.
+        """
         l = self._discoverSound(t)
         for s in l:
             if s not in self.queue:
                 effect.normalize(s)
                 self.queue.append(s)
 
-    def shiftPlayList(self, idx, offset):
+    def shiftPlayList(self, idx: int, offset: int):
+        """Shift given item in a play list by given offset
+
+        Args:
+            idx (int): index of item to be moved
+            offset (int): can be positive or negative. If index out of range, the new index will wrap around.
+        """
         target = idx + offset
         target = max(target, 0)
         target = min(target, len(self.queue)-1)
         self.queue[target], self.queue[idx] = self.queue[idx], self.queue[target]
 
-    def removeFromPlayList(self, idx):
+    def removeFromPlayList(self, idx: int):
+        """remove item with given index from the queue
+
+        Args:
+            idx (int): index of item to be removed
+        """
         del self.queue[idx]
 
     def stationID(self):
