@@ -151,6 +151,8 @@ This is an example directory structure on Windows. Some files are ignored
 - Set physical mixer channel (i.e. cart channel) to 100% (0dB)
 - Start the program. Refer to section [Run](#Run).
 
+It is recommended to run in windows Terminal instead of CMD on windows platforms for better visual effect.
+
 ### <a name='Run'></a>Run
 
 This software runs in two modes:
@@ -170,7 +172,7 @@ This software runs in two modes:
   - Servers
 - Less hardware resource consumption.
 
-To start with TUI:
+To start with TUI, cd to the directory in terminal and then:
 
 ```bash
 python main.py
