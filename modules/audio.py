@@ -9,17 +9,16 @@ from .util import configManager, ffmpegWrapper, conversion, Singleton
 
 
 class sound:
+    """Sound lazy-load proxy class
+    """
     def __init__(self, filename, duration=None) -> None:
         self.path = filename
-        self.data = None
+        self.data = None # load on demand
         self.duration = duration
-
-    def _get_length(self):
-        return ffmpegWrapper.getLength(self.path)
 
     def getDuration(self):
         if self.duration is None:
-            self.duration = self._get_length()
+            self.duration = ffmpegWrapper.getLength(self.path)
         return self.duration
 
     def getData(self):
@@ -38,6 +37,8 @@ class sound:
 
 
 class effect:
+    """Common audio effects
+    """
     def fadeOut(chan: mixer.Channel, desired_vol: int = 0):
         asyncio.run(effect._fadeOut(chan, desired_vol))
 
@@ -83,6 +84,16 @@ class effect:
             return None
 
     def _normalize(file, loudness: None):
+        """Loudness normalization in parallel
+
+        Args:
+            file (str): path to sound
+            loudness (int): a negative value in LUFS
+
+        Returns:
+            multiprocessing.Process: a process running the normalization wrapper,
+            or nothing if loudness check fails
+        """
         if loudness is None:
             loudness = configManager.cfg.audio.loudness
         try:
@@ -98,6 +109,8 @@ class effect:
 
 
 class virtualMixerWrapper(Singleton):
+    """A mixer wrapper managing multi-channel information
+    """
     def __init__(self) -> None:
         DEFAULT_CHANNEL = ["stationID", "show", "fill", "PSA"]
         self.lock = threading.RLock()
